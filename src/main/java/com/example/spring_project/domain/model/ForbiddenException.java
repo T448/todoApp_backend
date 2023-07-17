@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.FORBIDDEN)
-public class SessionException extends RuntimeException {
+public class ForbiddenException extends RuntimeException {
 
-    public SessionException(String message) {
+    public ForbiddenException(String message) {
         super(message);
     }
 }

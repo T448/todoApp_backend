@@ -1,4 +1,4 @@
-package com.example.spring_project.controller;
+package com.example.spring_project.presentation;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
