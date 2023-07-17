@@ -13,20 +13,20 @@ import com.example.spring_project.domain.repository.UserMapper;
 @Service
 public class UserService {
     @Autowired
-    UserMapper todoAppUserMapper;
+    UserMapper user;
 
     // 登録用メソッド
-    public boolean insert(User todoAppUser) {
-        return todoAppUserMapper.insert(todoAppUser);
+    public boolean insert(User newUser) {
+        return user.insert(newUser);
     }
 
     // 検索用メソッド
     public List<User> selectMany(String email) {
-        return todoAppUserMapper.selectMany(email);
+        return user.selectMany(email);
     }
 
     // 検索用メソッド
     public User selectOneUser(String email) {
-        return todoAppUserMapper.selectOneUser(email);
+        return user.selectOneUser(email);
     }
 }

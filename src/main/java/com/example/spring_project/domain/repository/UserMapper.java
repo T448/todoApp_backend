@@ -14,7 +14,7 @@ import com.example.spring_project.domain.model.User;
 public interface UserMapper {
     // 登録用メソッド
     @Insert("INSERT INTO users ( ulid, email, name ) VALUES ( #{ulid}, #{email}, #{name} )")
-    public boolean insert(User todoAppUser);
+    public boolean insert(User user);
 
     // 検索用メソッド
     @Select("SELECT * FROM users WHERE email = #{email}")
