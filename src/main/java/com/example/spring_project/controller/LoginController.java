@@ -20,7 +20,7 @@ public class LoginController {
     @Autowired
     UserService service;
 
-    @PostMapping(value = "/login", consumes = "application/json")
+    @PostMapping(value = "api//login", consumes = "application/json")
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Map<String, Object> login(@RequestBody(required = false) Map<String, Object> request) {
 
