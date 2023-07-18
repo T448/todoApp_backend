@@ -28,10 +28,10 @@ public class SessionController {
             response.put("sessionID", sessionID);
             response.put("user_info", checkSessionResult);
             if (checkSessionResult.size() == 0) {
-                throw new ForbiddenException("session is not connected");
+                throw new ForbiddenException("session is not connected1");
             }
         } else {
-            throw new ForbiddenException("session is not connected");
+            throw new ForbiddenException("session is not connected2");
         }
         return response;
     }

@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.spring_project.domain.model.ForbiddenException;
 import com.example.spring_project.domain.model.User;
 
 @Service
@@ -30,12 +29,10 @@ public class SessionUsecase {
     }
 
     public List<?> CheckSession(String sessionID) {
+        // Session切れだとしてもここではエラーを返さず、共通処理部分でエラー処理を行う。
         Jedis jedis = new Jedis("redis", 6379);
         List<?> checkSessionResult = jedis.lrange(sessionID, 0, -1);
         jedis.close();
-        if (checkSessionResult.size() == 0) {
-            throw new ForbiddenException("no session");
-        }
         return checkSessionResult;
     }
 }
