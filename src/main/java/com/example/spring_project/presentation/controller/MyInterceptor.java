@@ -17,7 +17,6 @@ public class MyInterceptor implements HandlerInterceptor {
     @Autowired
     SessionUsecase sessionUsecase;
 
-    String sessionID = "";
     String loginURL = "http://localhost:8080/api/login";
 
     @Override
@@ -25,6 +24,7 @@ public class MyInterceptor implements HandlerInterceptor {
             HttpServletResponse response, Object handler) throws Exception {
 
         Cookie cookie[] = request.getCookies();
+        String sessionID = "";
         if (cookie != null) {
             for (int i = 0; i < cookie.length; i++) {
                 if (cookie[i].getName().equals("sessionID")) {
