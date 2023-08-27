@@ -37,5 +37,5 @@
 │   │   └── scheduled_task // 名前の通り。
 │   ├── service // ユースケースを実現するロジックを書く。
 │   └── config // 環境変数等
-└──resources // mybatisのxml
+└──resources
 ```
