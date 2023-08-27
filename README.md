@@ -26,10 +26,12 @@
 │   │   └── repository // interfaceの定義。メソッドについて書くが、中身の具体的な処理は書かない。メソッド名、引数、返り値。
 │   ├── infrastructure
 │   │   ├── ormapper // mybatisのxmlとのマッピング(対応付け)用。interface
-│   │   └── repository // ormapperで定義したメソッドの具体的な処理はここ?
+│   │   └── repository //  実装クラス。domain.repositoryではinterfaceのみを定義しているため、中身の具体的な処理はここで行う。(といっても、実際のDB操作はxmlで行い、interfaceから値を取り出せるので、それを使用して、加工等して返す感じ。)
 │   ├── presentation // ユーザーがフロント操作して最初に指示が到達するのがこのpresentation層。
 │   │   ├── controller // GetMapperなど。
+│   │   ├── model // リクエスト、レスポンスの型定義
 │   │   └── scheduled_task // 名前の通り。
-│   └── usecase // ビジネスロジック
+│   ├── service // ユースケースを実現するロジックを書く。
+│   └── config // 環境変数等
 └──resources // mybatisのxml
 ```
