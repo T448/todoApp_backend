@@ -8,12 +8,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
     @Bean
-    MyInterceptor myInterceptor() {
-        return new MyInterceptor();
+    Interceptor interceptor() {
+        return new Interceptor();
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(myInterceptor());
+        registry.addInterceptor(interceptor());
     }
 }

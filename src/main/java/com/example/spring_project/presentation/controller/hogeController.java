@@ -8,6 +8,7 @@ public class hogeController {
     // 共通処理等の動作確認用のAPI
     @PostMapping(value = "/api/hoge")
     public String hoge(String inputValue) {
+        System.out.println("hoge");
         return "hoge";
     }
 }
