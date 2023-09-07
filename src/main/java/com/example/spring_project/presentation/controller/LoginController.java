@@ -1,46 +1,33 @@
 package com.example.spring_project.presentation.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.example.spring_project.service.LoginUsecase;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.example.spring_project.domain.model.BadRequestException;
-import com.example.spring_project.domain.model.User;
-import com.example.spring_project.domain.service.UserService;
-import com.example.spring_project.usecase.SessionUsecase;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class LoginController {
-    @Autowired
-    UserService userService;
-    @Autowired
-    SessionUsecase sessionUsecase;
 
-    @PostMapping(value = "/api/login", consumes = "application/json")
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Map<String, Object> login(@RequestBody(required = false) Map<String, Object> request) {
+  @Autowired
+  LoginUsecase loginUsecase;
 
-        Map<String, Object> response = new HashMap();
-
-        if (request == null) {
-            throw new BadRequestException("The request body is invalid.");
-        } else {
-            String email = request.get("email").toString();
-            String name = request.get("name").toString();
-
-            if (email.contains("@gmail.com") == false) {
-                throw new BadRequestException("Use gmail!");
-            } else {
-                String sessionID = sessionUsecase.GenerateSession(email, name);
-                response.put("sessionID", sessionID);
-                User userInfo = userService.selectOneUser(email);
-                response.put("user_info", userInfo);
-            }
-        }
-        return response;
+  @PostMapping(value = "/api/login")
+  public Map<String, Object> login(
+    @RequestHeader(required = false) Map<String, Object> requestHeader
+  ) {
+    Map<String, Object> response = new HashMap();
+    try {
+      String sessionId = loginUsecase.login(
+        requestHeader.get("authorization").toString()
+      );
+      response.put("sessionId", sessionId);
+      return response;
+    } catch (Exception error) {
+      throw new IllegalArgumentException(error.toString());
     }
+  }
 }

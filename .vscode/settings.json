@@ -24,4 +24,5 @@
             "icon": "terminal-powershell"
         }
     },
+    "java.debug.settings.onBuildFailureProceed": true,
 }
