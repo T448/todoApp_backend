@@ -45,6 +45,36 @@ public class RedisMethods {
     }
   }
 
+  /*
+   * @param String key,String data
+   * @return key
+   */
+  public String RegisterString(String key,String data){
+    String host = applicationProperty.get("spring.redis_host");
+    String port = applicationProperty.get("spring.redis_port");
+    try {
+        Jedis jedis = new Jedis(host, Integer.parseInt(port));
+        jedis.set(key,data);
+        jedis.close();
+        return key;
+    } catch (Exception error) {
+        return error.toString();
+    }
+  }
+
+  public String GetString(String key){
+  String host = applicationProperty.get("spring.redis_host");
+  String port = applicationProperty.get("spring.redis_port");
+  try {
+      Jedis jedis = new Jedis(host, Integer.parseInt(port));
+      String res = jedis.get(key);
+      jedis.close();
+      return res;
+  } catch (Exception error) {
+      return error.toString();
+  }
+}
+
   public String OverwriteData(String key, String[] data) {
     String host = applicationProperty.get("spring.redis_host");
     String port = applicationProperty.get("spring.redis_port");
@@ -52,6 +82,20 @@ public class RedisMethods {
         Jedis jedis = new Jedis(host, Integer.parseInt(port));
         jedis.del(key);
         jedis.rpush(key, data);
+        jedis.close();
+        return key;
+    } catch (Exception error) {
+        return error.toString();
+    }
+  }
+
+  public String OverwriteDataString(String key, String data) {
+    String host = applicationProperty.get("spring.redis_host");
+    String port = applicationProperty.get("spring.redis_port");
+    try {
+        Jedis jedis = new Jedis(host, Integer.parseInt(port));
+        jedis.del(key);
+        jedis.set(key, data);
         jedis.close();
         return key;
     } catch (Exception error) {

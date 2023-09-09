@@ -34,4 +34,4 @@ out/
 /.nb-gradle/
 
 .ssh/
-application.properties
+src/main/java/com/example/spring_project/config/application.properties
