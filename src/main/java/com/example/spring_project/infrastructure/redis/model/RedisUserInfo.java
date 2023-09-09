@@ -3,13 +3,16 @@ package com.example.spring_project.infrastructure.redis.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 public class RedisUserInfo {
-    String ulid;
-    String email;
-    String name;
-    String accessToken;
-    String refreshToken;
-    String expires;
+    private String ulid;
+    private String email;
+    private String name;
+    private String accessToken;
+    private String refreshToken;
+    private String expires;
+
+    public RedisUserInfo(){}
+
 }
