@@ -10,6 +10,7 @@ import com.example.spring_project.domain.repository.UserRepository;
 import com.example.spring_project.infrastructure.googleApi.response.GoogleOauthResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,17 +69,19 @@ public class LoginUsecase {
       // ユーザー情報の取得
       Map<String,String> userInfo =  googleRepository.GetUserInfo(accessToken);
       String email = userInfo.get("email");
+      email = email.replaceAll("\"", "");
       String name = userInfo.get("name");
-      User[] user = userRepository.SelectByEmail(email);
+      name = name.replaceAll("\"", "");
+      ArrayList<User> user = userRepository.SelectByEmail(email);
       // DBになければ登録
-      if (user.length == 0) {
-        User newUser = new User(email, name);
-        userRepository.RegisterUser(newUser);
+      if (user.isEmpty()) {
+        user.add(new User(email, name));
+        userRepository.RegisterUser(user.get(0));
       }
 
       // redisにユーザー情報、セッション情報を登録する。
       String sessionId = sessionRepository.GenerateSession(
-        user[0],
+        user.get(0),
         accessToken,
         refreshToken,
         expires

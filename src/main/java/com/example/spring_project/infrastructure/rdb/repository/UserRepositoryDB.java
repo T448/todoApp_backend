@@ -1,5 +1,7 @@
 package com.example.spring_project.infrastructure.rdb.repository;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +26,7 @@ public class UserRepositoryDB implements UserRepository {
   }
 
   @Override
-  public User[] SelectByEmail(String email) {
+  public ArrayList<User> SelectByEmail(String email) {
     return userMapper.selectByEmail(email);
   }
 }
