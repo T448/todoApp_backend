@@ -38,26 +38,12 @@ public class LoginUsecase {
   private GoogleOauthRepository googleOauthRepository;
   @Autowired
   private GoogleRepository googleRepository;
-  @Autowired
-  private ApplicationProperty applicationProperty;
 
   public String login(String authCode)
     throws UnsupportedEncodingException {
       // アクセストークン、リフレッシュトークン、有効期限を取得する
-      String clientId = applicationProperty.get("spring.client_id");
-      String clientSecret = applicationProperty.get("spring.client_secret");
-      String redirectUri = URLEncoder.encode(
-        applicationProperty.get("spring.redirect_uri"),
-        "UTF-8"
-      );
 
-      String content = "";
-      content += "code=" + authCode;
-      content += "&client_id=" + clientId;
-      content += "&client_secret=" + clientSecret;
-      content += "&redirect_uri=" + redirectUri;
-      content += "&grant_type=authorization_code";
-      GoogleOauthResponse googleOauthResponse = googleOauthRepository.GetAccessToken(content);
+      GoogleOauthResponse googleOauthResponse = googleOauthRepository.GetAccessToken(authCode);
       String accessToken = googleOauthResponse.getAccessToken();
       String refreshToken = googleOauthResponse.getRefreshToken();
       String expiresIn = googleOauthResponse.getExpiresIn();

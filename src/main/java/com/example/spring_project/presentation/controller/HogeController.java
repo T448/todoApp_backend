@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
-public class hogeController {
+public class HogeController {
     // 共通処理等の動作確認用のAPI
     @PostMapping(value = "/api/hoge")
     public String hoge(String inputValue) {

@@ -24,8 +24,19 @@ public class GoogleOauthRepositoryImpl implements GoogleOauthRepository {
   private ApplicationProperty applicationProperty;
 
   @Override
-  public GoogleOauthResponse GetAccessToken(String content) {
+  public GoogleOauthResponse GetAccessToken(String authCode) throws UnsupportedEncodingException {
+    
     String requestUrl = applicationProperty.get("spring.oauth2_request_url");
+    String clientId = applicationProperty.get("spring.client_id");
+    String clientSecret = applicationProperty.get("spring.client_secret");
+    String redirectUri = URLEncoder.encode(applicationProperty.get("spring.redirect_uri"),"UTF-8");
+
+    String content = "";
+    content += "code=" + authCode;
+    content += "&client_id=" + clientId;
+    content += "&client_secret=" + clientSecret;
+    content += "&redirect_uri=" + redirectUri;
+    content += "&grant_type=authorization_code";
 
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest request = HttpRequest
