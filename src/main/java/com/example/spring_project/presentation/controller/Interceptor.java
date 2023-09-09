@@ -43,7 +43,9 @@ public class Interceptor implements HandlerInterceptor {
         }
         String requestURL = request.getRequestURL().toString();
         String loginURL = applicationProperty.get("spring.login_url");
-
+        if (requestURL.equals("http://localhost:8080/api/redis-flush")){
+            return true;
+        }
         if (requestURL.equals(loginURL) == false) {
             String checkSessionResultJsonString = sessionRepository.CheckSession(sessionID);
             ObjectMapper  objectMapperForRead = new ObjectMapper();
@@ -52,6 +54,7 @@ public class Interceptor implements HandlerInterceptor {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
             Date expires = dateFormat.parse(checkSessionResult.getExpires());
             if (expires.before(new Date())) {
+                System.out.println("refresh access token");
                 try {
                     var refreshResult = googleOauthRepositoryImpl.RefreshAccessToken(
                         new User(checkSessionResult.getEmail(),checkSessionResult.getName()),sessionID,checkSessionResult.getRefreshToken());
@@ -69,6 +72,7 @@ public class Interceptor implements HandlerInterceptor {
                 }
             }
         }
+        
         return true;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.args.FlushMode;
 
 @Service
 public class RedisMethods {
@@ -98,6 +99,19 @@ public class RedisMethods {
         jedis.set(key, data);
         jedis.close();
         return key;
+    } catch (Exception error) {
+        return error.toString();
+    }
+  }
+
+  public String DeleteAllData(){
+    String host = applicationProperty.get("spring.redis_host");
+    String port = applicationProperty.get("spring.redis_port");
+    try {
+        Jedis jedis = new Jedis(host, Integer.parseInt(port));
+        jedis.flushDB(FlushMode.SYNC);
+        jedis.close();
+        return "delete all";
     } catch (Exception error) {
         return error.toString();
     }
