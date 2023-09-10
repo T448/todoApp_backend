@@ -1,17 +1,15 @@
 package com.example.spring_project.service;
 
 import com.example.spring_project.common.methods.TimeCalculator;
-import com.example.spring_project.config.ApplicationProperty;
 import com.example.spring_project.domain.entity.User;
 import com.example.spring_project.domain.repository.GoogleOauthRepository;
 import com.example.spring_project.domain.repository.GoogleRepository;
 import com.example.spring_project.domain.repository.SessionRepository;
 import com.example.spring_project.domain.repository.UserRepository;
+import com.example.spring_project.infrastructure.googleApi.response.GoogleGetUserInfoResponse;
 import com.example.spring_project.infrastructure.googleApi.response.GoogleOauthResponse;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,10 +51,10 @@ public class LoginUsecase {
       // ジャンプしないとわからないのは不親切。
 
       // ユーザー情報の取得
-      Map<String,String> userInfo =  googleRepository.GetUserInfo(accessToken);
-      String email = userInfo.get("email");
+      GoogleGetUserInfoResponse userInfo =  googleRepository.GetUserInfo(accessToken);
+      String email = userInfo.getEmail();
       email = email.replaceAll("\"", "");
-      String name = userInfo.get("name");
+      String name = userInfo.getName();
       name = name.replaceAll("\"", "");
       ArrayList<User> user = userRepository.SelectByEmail(email);
       // DBになければ登録

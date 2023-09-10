@@ -1,7 +1,7 @@
 package com.example.spring_project.domain.repository;
 
-import java.util.Map;
+import com.example.spring_project.infrastructure.googleApi.response.GoogleGetUserInfoResponse;
 
 public interface GoogleRepository {
-  public Map<String, String> GetUserInfo(String accessToken);
+  public GoogleGetUserInfoResponse GetUserInfo(String accessToken);
 }
