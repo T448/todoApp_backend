@@ -14,7 +14,8 @@ public class User {
   private Date updated_at;
 
   public User(String email, String name) {
-    this.ulid = (new ULID()).toString();
+    ULID ulid = new ULID();
+    this.ulid = ulid.nextULID();
     this.email = email;
     this.name = name;
   }

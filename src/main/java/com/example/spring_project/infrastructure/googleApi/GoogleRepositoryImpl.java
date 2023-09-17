@@ -2,6 +2,7 @@ package com.example.spring_project.infrastructure.googleApi;
 
 import com.example.spring_project.config.ApplicationProperty;
 import com.example.spring_project.domain.repository.GoogleRepository;
+import com.example.spring_project.infrastructure.googleApi.response.GoogleGetUserInfoResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -9,8 +10,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +21,8 @@ public class GoogleRepositoryImpl implements GoogleRepository {
   private ApplicationProperty applicationProperty;
 
   @Override
-  public Map<String, String> GetUserInfo(String accessToken) {
-    Map<String, String> response = new HashMap();
+  public GoogleGetUserInfoResponse GetUserInfo(String accessToken) {
+    
     String requestUrl = applicationProperty.get(
       "spring.get_user_info_request_url"
     );
@@ -41,11 +40,12 @@ public class GoogleRepositoryImpl implements GoogleRepository {
       );
       ObjectMapper mapper = new ObjectMapper();
       JsonNode node = mapper.readTree(response_from_google.body());
-      response.put("email", node.get("email").toString());
-      response.put("name", node.get("name").toString());
+      String email = node.get("email").toString();
+      String name = node.get("name").toString();
+      GoogleGetUserInfoResponse response = new GoogleGetUserInfoResponse(email, name);
+      return response;
     } catch (IOException | InterruptedException e) {
-      e.printStackTrace();
+      throw new Error(e.toString());
     }
-    return response;
   }
 }

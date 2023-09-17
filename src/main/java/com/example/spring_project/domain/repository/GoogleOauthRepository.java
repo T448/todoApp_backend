@@ -6,7 +6,7 @@ import com.example.spring_project.infrastructure.googleApi.response.GoogleOauthR
 import java.io.UnsupportedEncodingException;
 
 public interface GoogleOauthRepository {
-  public GoogleOauthResponse GetAccessToken(String content);
+  public GoogleOauthResponse GetAccessToken(String content) throws UnsupportedEncodingException;
 
   public GoogleOauthRefreshResponse RefreshAccessToken(
     User user,
