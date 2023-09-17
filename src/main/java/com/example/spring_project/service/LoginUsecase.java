@@ -40,15 +40,11 @@ public class LoginUsecase {
   public String login(String authCode)
     throws UnsupportedEncodingException {
       // アクセストークン、リフレッシュトークン、有効期限を取得する
-
       GoogleOauthResponse googleOauthResponse = googleOauthRepository.GetAccessToken(authCode);
       String accessToken = googleOauthResponse.getAccessToken();
       String refreshToken = googleOauthResponse.getRefreshToken();
       String expiresIn = googleOauthResponse.getExpiresIn();
       String expires = TimeCalculator.getTimeAfterSeconds(expiresIn);
-
-      // TODO : responseの型定義を行う。
-      // ジャンプしないとわからないのは不親切。
 
       // ユーザー情報の取得
       GoogleGetUserInfoResponse userInfo =  googleRepository.GetUserInfo(accessToken);

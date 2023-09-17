@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.security.sasl.AuthenticationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -12,13 +14,16 @@ import com.example.spring_project.domain.entity.User;
 import com.example.spring_project.domain.repository.SessionRepository;
 import com.example.spring_project.infrastructure.googleApi.GoogleOauthRepositoryImpl;
 import com.example.spring_project.infrastructure.redis.model.RedisUserInfo;
+import com.example.spring_project.presentation.HideToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import jakarta.servlet.http.Cookie;
+// import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class Interceptor implements HandlerInterceptor {
     @Autowired
     SessionRepository sessionRepository;
@@ -27,52 +32,59 @@ public class Interceptor implements HandlerInterceptor {
     @Autowired
     GoogleOauthRepositoryImpl googleOauthRepositoryImpl;
 
-    @Override
-    public boolean preHandle(HttpServletRequest request,
-            HttpServletResponse response, Object handler) throws Exception {
+    private final HideToken hideToken;
 
-        Cookie cookie[] = request.getCookies();
-        String sessionID = "";
-        if (cookie != null) {
-            for (int i = 0; i < cookie.length; i++) {
-                if (cookie[i].getName().equals("sessionID")) {
-                    sessionID = cookie[i].getValue();
-                    break;
-                }
-            }
-        }
+    @Override
+    public boolean preHandle(HttpServletRequest request,HttpServletResponse response, Object handler) throws Exception {
+        String sessionID = request.getHeader(   "sessionID");
         String requestURL = request.getRequestURL().toString();
         String loginURL = applicationProperty.get("spring.login_url");
         if (requestURL.equals("http://localhost:8080/api/redis-flush")){
+            // redisのデータを全消去したいとき用
+            // 以降のセッション系の処理とは無関係のためそのままreturn
             return true;
         }
-        if (requestURL.equals(loginURL) == false) {
-            String checkSessionResultJsonString = sessionRepository.CheckSession(sessionID);
-            ObjectMapper  objectMapperForRead = new ObjectMapper();
-            RedisUserInfo checkSessionResult = objectMapperForRead.readValue(checkSessionResultJsonString, RedisUserInfo.class);
+        if (requestURL.equals(loginURL)){
+            // ログイン処理実行時にセッションを発行するので以降の処理は不要
+            // そのままreturn
+            return true;
+        }
+        String checkSessionResultJsonString = sessionRepository.CheckSession(sessionID);
+        System.out.println("checkSessionResultJsonString");
+        System.out.println(checkSessionResultJsonString);
+        if (checkSessionResultJsonString == null){
+            response.sendError(401, "sessionIDが不正です。");
+            return false;
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-            Date expires = dateFormat.parse(checkSessionResult.getExpires());
-            if (expires.before(new Date())) {
-                System.out.println("refresh access token");
-                try {
-                    var refreshResult = googleOauthRepositoryImpl.RefreshAccessToken(
-                        new User(checkSessionResult.getEmail(),checkSessionResult.getName()),sessionID,checkSessionResult.getRefreshToken());
-                    
-                    RedisUserInfo updatedSessionInfo = new RedisUserInfo(checkSessionResult.getUlid(),checkSessionResult.getEmail(), checkSessionResult.getName(), refreshResult.getAccessToken(), checkSessionResult.getRefreshToken(), refreshResult.getExpires());
+        }
+        ObjectMapper  objectMapperForRead = new ObjectMapper();
+        RedisUserInfo checkSessionResult = objectMapperForRead.readValue(checkSessionResultJsonString, RedisUserInfo.class);
 
-                    ObjectMapper objectMapperForWrite = new ObjectMapper();
-                    objectMapperForWrite.enable(SerializationFeature.INDENT_OUTPUT);
-                    String updatedSessionInfoJsonString = objectMapperForWrite.writeValueAsString(updatedSessionInfo);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date expires = dateFormat.parse(checkSessionResult.getExpires());
+        if(expires.after(new Date())){
+            hideToken.setHideTokenValue(checkSessionResult.getAccessToken());
+            return true;
+        } else {
+            System.out.println("refresh access token");
+            try {
+                var refreshResult = googleOauthRepositoryImpl.RefreshAccessToken(
+                    new User(checkSessionResult.getEmail(),checkSessionResult.getName()),sessionID,checkSessionResult.getRefreshToken());
+                String  updatedAccessToken = refreshResult.getAccessToken();
+                hideToken.setHideTokenValue(updatedAccessToken);
+                RedisUserInfo updatedSessionInfo = new RedisUserInfo(checkSessionResult.getUlid(),checkSessionResult.getEmail(), checkSessionResult.getName(), updatedAccessToken, checkSessionResult.getRefreshToken(), refreshResult.getExpires());
+                
+                ObjectMapper objectMapperForWrite = new ObjectMapper();
+                objectMapperForWrite.enable(SerializationFeature.INDENT_OUTPUT);
+                String updatedSessionInfoJsonString = objectMapperForWrite.writeValueAsString(updatedSessionInfo);
 
-                    sessionRepository.RefreshAccessToken(sessionID, updatedSessionInfoJsonString);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                sessionRepository.RefreshAccessToken(sessionID, updatedSessionInfoJsonString);
+                
+            } catch (IOException e) {
+                response.sendError(400, "refresh failed \n"+e.toString());
+                return false;
             }
         }
-        
         return true;
     }
 }

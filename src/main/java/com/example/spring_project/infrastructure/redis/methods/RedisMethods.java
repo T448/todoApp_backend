@@ -70,9 +70,12 @@ public class RedisMethods {
       Jedis jedis = new Jedis(host, Integer.parseInt(port));
       String res = jedis.get(key);
       jedis.close();
+      System.out.println("sessionIDがredisにある");
       return res;
   } catch (Exception error) {
-      return error.toString();
+      System.out.println("sessionIDがredisにない");
+      System.out.println(error.toString());
+      return null;
   }
 }
 
