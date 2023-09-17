@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class LoginController {
 
   @Autowired
