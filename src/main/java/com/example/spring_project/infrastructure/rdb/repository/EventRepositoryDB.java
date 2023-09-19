@@ -1,5 +1,6 @@
 package com.example.spring_project.infrastructure.rdb.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,18 @@ public class EventRepositoryDB implements EventRepository {
     private EventMapper eventMapper;
 
     @Override
-    public String RegisterEvents(List<Event> eventList){
+    public Number RegisterEvents(List<Event> eventList){
         try{
             eventMapper.registerEvents(eventList);
-            return "register done!";
+            return eventList.size();
         } catch (Exception error){
             System.out.println(error);
-            return error.toString();
+            return -1;
         }
+    }
+
+    @Override
+    public Date GetLatestUpdatedDate(String email){
+        return eventMapper.getLatestUpdatedDate(email);
     }
 }

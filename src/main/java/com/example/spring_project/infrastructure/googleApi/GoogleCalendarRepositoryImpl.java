@@ -25,8 +25,10 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository{
     public ArrayList<Event> GetGoogleCalendarEvents(String email,String accessToken,Date updatedMin){
         ArrayList<Event> events = new ArrayList<Event>();
         String requestUrl = "https://www.googleapis.com/calendar/v3/calendars/";
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
         try {
             requestUrl += URLEncoder.encode(email, "UTF-8") + "/events";
+            requestUrl += "?updatedMin=" + sf.format(updatedMin);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

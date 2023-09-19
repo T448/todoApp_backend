@@ -27,4 +27,16 @@
     )
     </foreach>
 </insert>
+<select id="getLatestUpdatedDate">
+    SELECT
+        updated_at
+    FROM
+        events
+    WHERE
+        email = #{email}
+    ORDER BY
+        updated_at DESC
+    LIMIT
+        1
+</select>
 </mapper>
