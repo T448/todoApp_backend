@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_project.infrastructure.rdb.mapper.EventMapper">
+<insert id="registerEvents" parameterType="java.util.List">
+    INSERT INTO events
+    (     
+        id,
+        email,
+        summary,
+        parent_event,
+        start,
+        end,
+        created_at,
+        updated_at
+    ) 
+    VALUES 
+    <foreach collection="eventList" item="item" separator=",">
+    (
+        #{item.id},
+        #{item.email},
+        #{item.summary},
+        #{item.parent_event},
+        #{item.start},
+        #{item.end},
+        #{item.created_at},
+        #{item.updated_at}
+    )
+    </foreach>
+</insert>
+</mapper>
