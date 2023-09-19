@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.spring_project.infrastructure.rdb.mapper.EventMapper">
 <insert id="registerEvents" parameterType="java.util.List">
-    INSERT INTO events
+    INSERT IGNORE INTO events
     (     
         id,
         email,
