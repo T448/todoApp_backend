@@ -10,8 +10,11 @@ import lombok.Getter;
 public class Event {
     private String id;
     private String email;
-    private String summary;
-    private String parent_event;
+    private String title;
+    private String short_title;
+    private String project_id;
+    private String parent_event_id;
+    private String memo;
     private Date start;
     private Date end;
     private Date created_at;

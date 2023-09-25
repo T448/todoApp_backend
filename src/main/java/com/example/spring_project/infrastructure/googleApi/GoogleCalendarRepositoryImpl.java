@@ -28,7 +28,10 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository{
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
         try {
             requestUrl += URLEncoder.encode(email, "UTF-8") + "/events";
-            requestUrl += "?updatedMin=" + sf.format(updatedMin);
+            if (updatedMin != null){
+                requestUrl += "?updatedMin=" + sf.format(updatedMin);
+            }
+            
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -60,7 +63,7 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository{
                 String id = event.get("id").toString();
                 String created_at = event.get("created").toString();
                 String updated_at = event.get("updated").toString();
-                String summary = event.get("summary").toString();
+                String title = event.get("summary").toString();
                 String start;
                 String end;
 
@@ -79,7 +82,7 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository{
                 }
                 id = id.replaceAll("\"","");
                 email = email.replaceAll("\"","");
-                summary = summary.replaceAll("\"","");
+                title = title.replaceAll("\"","");
                 start = start.replaceAll("\"", "");
                 start = start.replaceAll("T", " ");
                 start = start.replaceAll("\\+09:00", "");
@@ -96,14 +99,21 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository{
                 updated_at = updated_at.replaceAll("T", " ");
                 updated_at = updated_at.replaceAll("Z", "");
 
+                String shortTitle = title;
+                if (shortTitle.length()>10){
+                    shortTitle = shortTitle.substring(0, 10) + "...";
+                }
+
                 Date start_Date = start_dateFormat.parse(start);
                 Date end_Date = end_dateFormat.parse(end);
                 Date created_at_Date = created_at_dateFormat.parse(created_at);
                 Date updated_at_Date = updated_at_dateFormat.parse(updated_at);
 
-                String parentEvent = "";
+                String projectId = "";
+                String parentEventId = "";
+                String memo = "";
                 
-                Event eventObj = new Event(id, email, summary,parentEvent, start_Date,end_Date,created_at_Date,updated_at_Date);
+                Event eventObj = new Event(id, email, title, shortTitle, projectId, parentEventId, memo, start_Date, end_Date, created_at_Date, updated_at_Date);
                 events.add(eventObj);
             }
 
