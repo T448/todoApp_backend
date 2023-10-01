@@ -28,6 +28,19 @@ public class EventRepositoryDB implements EventRepository {
     }
 
     @Override
+    public List<Event> GetEvents(String email, Date update_at){
+        try{
+            System.out.println("取得の直前");
+            System.out.println(update_at);
+            return eventMapper.getEvents(email, update_at);
+        } catch (Exception error){
+            System.out.println("取得の直前でエラー");
+            System.out.println(error);
+            throw new IllegalArgumentException(error);
+        }
+    }
+
+    @Override
     public Date GetLatestUpdatedDate(String email){
         return eventMapper.getLatestUpdatedDate(email);
     }

@@ -33,6 +33,26 @@
     )
     </foreach>
 </insert>
+<select id="getEvents">
+SELECT
+    id,
+    email,
+    title,
+    short_title,
+    project_id,
+    parent_event_id,
+    memo,
+    start,
+    end,
+    created_at,
+    updated_at
+FROM 
+    events
+WHERE
+    email = #{email}
+    AND
+    updated_at <![CDATA[>=]]> #{updated_at};
+</select>
 <select id="getLatestUpdatedDate">
     SELECT
         updated_at

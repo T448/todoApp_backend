@@ -1,8 +1,12 @@
 package com.example.spring_project.presentation.controller;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.spring_project.domain.entity.Event;
 import com.example.spring_project.presentation.HideValue;
 import com.example.spring_project.service.EventUsecase;
 
@@ -16,15 +20,20 @@ public class EventController {
     private EventUsecase eventUsecase;
     
     @GetMapping(value = "/api/events")
-    public Number getEvents(){
+    public List<Event> getEvents(@RequestParam(required = false) Boolean all){
         try{
             String accessToken = hideValue.getHideTokenValue();
             String email = hideValue.getHideEmailValue();
-
+            System.out.println("---------------[event controller] getEvents---------------");
+            System.out.println(all);
+            System.out.println(email);
+            if (all == null){
+                all = false;
+            }
      
             // TODO : 前回取得時刻以降のみのフィルターを使えるようにする
             // TODO: イベントのタグの扱いについて調べる
-            Number registerResult = eventUsecase.getEvents(accessToken, email);
+            List<Event> registerResult = eventUsecase.getEvents(accessToken, email, all);
             return registerResult;
             
         } catch(Exception e){
