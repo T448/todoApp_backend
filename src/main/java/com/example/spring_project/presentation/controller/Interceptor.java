@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.security.sasl.AuthenticationException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -14,7 +12,7 @@ import com.example.spring_project.domain.entity.User;
 import com.example.spring_project.domain.repository.SessionRepository;
 import com.example.spring_project.infrastructure.googleApi.GoogleOauthRepositoryImpl;
 import com.example.spring_project.infrastructure.redis.model.RedisUserInfo;
-import com.example.spring_project.presentation.HideToken;
+import com.example.spring_project.presentation.HideValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -32,7 +30,7 @@ public class Interceptor implements HandlerInterceptor {
     @Autowired
     GoogleOauthRepositoryImpl googleOauthRepositoryImpl;
 
-    private final HideToken hideToken;
+    private final HideValue hideValue;
 
     @Override
     public boolean preHandle(HttpServletRequest request,HttpServletResponse response, Object handler) throws Exception {
@@ -63,7 +61,8 @@ public class Interceptor implements HandlerInterceptor {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         Date expires = dateFormat.parse(checkSessionResult.getExpires());
         if(expires.after(new Date())){
-            hideToken.setHideTokenValue(checkSessionResult.getAccessToken());
+            hideValue.setHideTokenValue(checkSessionResult.getAccessToken());
+            hideValue.setHideEmailValue(checkSessionResult.getEmail());
             return true;
         } else {
             System.out.println("refresh access token");
@@ -71,7 +70,8 @@ public class Interceptor implements HandlerInterceptor {
                 var refreshResult = googleOauthRepositoryImpl.RefreshAccessToken(
                     new User(checkSessionResult.getEmail(),checkSessionResult.getName()),sessionID,checkSessionResult.getRefreshToken());
                 String  updatedAccessToken = refreshResult.getAccessToken();
-                hideToken.setHideTokenValue(updatedAccessToken);
+                hideValue.setHideTokenValue(updatedAccessToken);
+                hideValue.setHideEmailValue(checkSessionResult.getEmail());
                 RedisUserInfo updatedSessionInfo = new RedisUserInfo(checkSessionResult.getUlid(),checkSessionResult.getEmail(), checkSessionResult.getName(), updatedAccessToken, checkSessionResult.getRefreshToken(), refreshResult.getExpires());
                 
                 ObjectMapper objectMapperForWrite = new ObjectMapper();

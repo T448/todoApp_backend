@@ -27,7 +27,7 @@ public class RedisRepository implements SessionRepository {
     String expires
   ) {
     String sessionID = UUID.randomUUID().toString();
-    RedisUserInfo redisUserInfo = new RedisUserInfo(user.getUlid(), user.getEmail(), user.getName(), access_token, refresh_token, expires);
+    RedisUserInfo redisUserInfo = new RedisUserInfo(user.getUlid(), user.getEmail(), user.getName(), access_token.replaceAll("\"",""), refresh_token.replaceAll("\"",""), expires);
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
     try {

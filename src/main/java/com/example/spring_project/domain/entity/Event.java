@@ -1,0 +1,22 @@
+package com.example.spring_project.domain.entity;
+
+import java.util.Date;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class Event {
+    private String id;
+    private String email;
+    private String title;
+    private String short_title;
+    private String project_id;
+    private String parent_event_id;
+    private String memo;
+    private Date start;
+    private Date end;
+    private Date created_at;
+    private Date updated_at;
+}

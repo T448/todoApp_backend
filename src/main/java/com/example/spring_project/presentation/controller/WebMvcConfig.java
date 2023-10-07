@@ -8,7 +8,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.example.spring_project.presentation.HideToken;
+import com.example.spring_project.presentation.HideValue;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -20,13 +20,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Bean
     Interceptor interceptor() {
-        return new Interceptor(hideToken());
+        return new Interceptor(hideValue());
     }
 
     // @Bean
     @Bean
     @Scope(value = WebApplicationContext.SCOPE_REQUEST,proxyMode=ScopedProxyMode.TARGET_CLASS)
-    HideToken hideToken(){
-        return new HideToken();
+    HideValue hideValue(){
+        return new HideValue();
     }
 }
