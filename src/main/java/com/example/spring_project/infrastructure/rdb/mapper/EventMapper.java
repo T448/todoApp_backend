@@ -12,7 +12,7 @@ import com.example.spring_project.domain.entity.Event;
 public interface EventMapper{
     public boolean registerEvents(@Param("eventList") List<Event> eventList);
 
-    public List<Event> getEvents(@Param("email") String email,@Param("updated_at") Date updated_at);
+    public List<Event> getEvents(@Param("user_email") String email,@Param("updated_at") Date updated_at);
 
     public Date getLatestUpdatedDate(String email); 
     
