@@ -19,4 +19,34 @@
         #{email}
     )
 </insert>
+<update id="updateProject">
+    UPDATE
+        projects
+    SET
+        name = #{name_new}
+        , color = #{color}
+        , memo = #{memo}
+        , user_email = #{email}
+        , updated_at = CURRENT_TIMESTAMP
+    WHERE
+        name = #{name_old}
+        AND
+        user_email = #{email}
+</update>
+<select id="selectByNameAndEmail" resultType="com.example.spring_project.domain.entity.Project">
+    SELECT
+        id
+        ,name
+        ,color
+        ,memo
+        ,user_email AS email
+        ,created_at AS createdAt
+        ,updated_at AS updatedAt
+    FROM
+        projects
+    WHERE
+        name = #{name}
+        AND
+        user_email = #{email}
+</select>
 </mapper>

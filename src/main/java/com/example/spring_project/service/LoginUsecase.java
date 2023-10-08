@@ -1,10 +1,12 @@
 package com.example.spring_project.service;
 
 import com.example.spring_project.common.methods.TimeCalculator;
+import com.example.spring_project.domain.entity.Project;
 import com.example.spring_project.domain.entity.User;
 import com.example.spring_project.domain.repository.GoogleCalendarGetCalendarListRepository;
 import com.example.spring_project.domain.repository.GoogleOauthRepository;
 import com.example.spring_project.domain.repository.GoogleRepository;
+import com.example.spring_project.domain.repository.ProjectRepository;
 import com.example.spring_project.domain.repository.SessionRepository;
 import com.example.spring_project.domain.repository.UserRepository;
 import com.example.spring_project.infrastructure.googleApi.GoogleCalendarGetCalendarListRepositoryImpl;
@@ -40,9 +42,13 @@ public class LoginUsecase {
   private GoogleRepository googleRepository;
   @Autowired
   private GoogleCalendarGetCalendarListRepository googleCalendarGetCalendarListRepository;
+  @Autowired
+  private ProjectRepository projectRepository;
+  private static final String GENERAL = "General";
 
   public String login(String authCode)
     throws UnsupportedEncodingException {
+      System.out.println( "login");
       // アクセストークン、リフレッシュトークン、有効期限を取得する
       GoogleOauthResponse googleOauthResponse = googleOauthRepository.GetAccessToken(authCode);
       String accessToken = googleOauthResponse.getAccessToken();
@@ -62,6 +68,9 @@ public class LoginUsecase {
       if (user.isEmpty()) {
         user.add(new User(email, name));
         userRepository.RegisterUser(user.get(0),mainCalendarColor);
+      } else{
+        Project projectBeforeUpdate = projectRepository.selectByNameAndEmail(GENERAL, email);
+        projectRepository.updateProject(GENERAL,GENERAL,mainCalendarColor,projectBeforeUpdate.getMemo(),email);
       }
 
       // redisにユーザー情報、セッション情報を登録する。
