@@ -25,7 +25,12 @@ public class EventUsecase {
         System.out.println(latestUpdatedDate);
         try{   
             List<Event> eventList = googleCalendarRepository.GetGoogleCalendarEvents(email, accessToken, latestUpdatedDate);
-            Number registerResult = eventRepository.RegisterEvents(eventList);
+            System.out.println("---------------eventList---------------");
+            System.out.println(eventList);
+            Number registerResult = -1;
+            if (!eventList.isEmpty()){
+                registerResult = eventRepository.RegisterEvents(eventList);
+            }            
             System.out.println("---------------DBに新たに登録された件数---------------");
             System.out.println(registerResult);
             if (all){
