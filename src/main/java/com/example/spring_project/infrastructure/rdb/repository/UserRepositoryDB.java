@@ -14,6 +14,7 @@ import de.huxhorn.sulky.ulid.ULID;
 
 @Service
 public class UserRepositoryDB implements UserRepository {
+  private static final String GENERAL = "General";
 
   @Autowired
   private UserMapper userMapper;
@@ -21,11 +22,11 @@ public class UserRepositoryDB implements UserRepository {
   private ProjectMapper projectMapper;
 
   @Override
-  public String RegisterUser(User user) {
+  public String RegisterUser(User user,String color) {
     try {
       ULID ulid = new ULID();
       userMapper.registerUser(user);
-      projectMapper.insertProject(ulid.nextULID(), "General", "#00ff00", "", user.getEmail());
+      projectMapper.insertProject(ulid.nextULID(),GENERAL , color, "", user.getEmail());
       return user.getUlid();
     } catch (Exception error) {
       System.out.println(error.toString());
