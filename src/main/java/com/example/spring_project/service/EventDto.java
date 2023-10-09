@@ -18,6 +18,7 @@ public class EventDto {
     private String title;
     private String shortTitle;
     private String projectId;
+    private String projectName;
     private String projectColor;
     private String parentEventId;
     private List<String> childEventIdList;

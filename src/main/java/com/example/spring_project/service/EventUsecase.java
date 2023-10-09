@@ -54,24 +54,30 @@ public class EventUsecase {
             List<Event> getEventListResult = eventRepository.GetEvents(email, latestUpdatedDate);
             System.out.println(getEventListResult);
             List<Project> projectList = projectRepository.selectByEmail(email);
-            Map<String, String> projectIdAndColorMap = new HashMap<String, String>();
-            projectList.forEach(item -> projectIdAndColorMap.put(item.getId(), item.getColor()));
+            Map<String, Project> projectIdAndDetailMap = new HashMap<String, Project>();
+
+            projectList.forEach(item -> projectIdAndDetailMap.put(item.getId(), item));
             List<EventDto> getEventDtoListResult = getEventListResult
                     .stream()
-                    .map(item -> new EventDto(
-                            item.getId(),
-                            item.getEmail(),
-                            item.getTitle(),
-                            item.getShort_title(),
-                            item.getProject_id(),
-                            projectIdAndColorMap.get(item.getProject_id()),
-                            item.getParent_event_id(),
-                            List.of(),
-                            item.getMemo(),
-                            item.getStart(),
-                            item.getEnd(),
-                            item.getCreated_at(),
-                            item.getUpdated_at()))
+                    .map(item -> {
+                        String thisProjectId = item.getProject_id();
+                        Project thisProjectDetail = projectIdAndDetailMap.get(thisProjectId);
+                        return new EventDto(
+                                item.getId(),
+                                item.getEmail(),
+                                item.getTitle(),
+                                item.getShort_title(),
+                                item.getProject_id(),
+                                thisProjectDetail.getName(),
+                                thisProjectDetail.getColor(),
+                                item.getParent_event_id(),
+                                List.of(),
+                                item.getMemo(),
+                                item.getStart(),
+                                item.getEnd(),
+                                item.getCreated_at(),
+                                item.getUpdated_at());
+                    })
                     .toList();
             getEventDtoListResult.forEach(item -> item.setChildEventIdList(getEventListResult));
             return getEventDtoListResult;
