@@ -2,14 +2,18 @@ package com.example.spring_project.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.spring_project.domain.entity.Event;
+import com.example.spring_project.domain.entity.Project;
 import com.example.spring_project.domain.repository.EventRepository;
 import com.example.spring_project.domain.repository.GoogleCalendarRepository;
+import com.example.spring_project.domain.repository.ProjectRepository;
 
 @Service
 public class EventUsecase {
@@ -48,8 +52,30 @@ public class EventUsecase {
             System.out.println("---------------SELECT対象---------------");
             System.out.println(latestUpdatedDate);
             List<Event> getEventListResult = eventRepository.GetEvents(email, latestUpdatedDate);
-            return getEventListResult;
-        } catch(Exception e){
+            System.out.println(getEventListResult);
+            List<Project> projectList = projectRepository.selectByEmail(email);
+            Map<String, String> projectIdAndColorMap = new HashMap<String, String>();
+            projectList.forEach(item -> projectIdAndColorMap.put(item.getId(), item.getColor()));
+            List<EventDto> getEventDtoListResult = getEventListResult
+                    .stream()
+                    .map(item -> new EventDto(
+                            item.getId(),
+                            item.getEmail(),
+                            item.getTitle(),
+                            item.getShort_title(),
+                            item.getProject_id(),
+                            projectIdAndColorMap.get(item.getProject_id()),
+                            item.getParent_event_id(),
+                            List.of(),
+                            item.getMemo(),
+                            item.getStart(),
+                            item.getEnd(),
+                            item.getCreated_at(),
+                            item.getUpdated_at()))
+                    .toList();
+            getEventDtoListResult.forEach(item -> item.setChildEventIdList(getEventListResult));
+            return getEventDtoListResult;
+        } catch (Exception e) {
             throw new Error(e.toString());
         }
     }
