@@ -1,5 +1,7 @@
 package com.example.spring_project.infrastructure.rdb.repository;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,5 +22,9 @@ public class ProjectRepositoryDB implements ProjectRepository{
     @Override
     public Project selectByNameAndEmail(String name,String email){
         return projectMapper.selectByNameAndEmail(name, email);
+    }
+    @Override
+    public List<Project> selectByEmail(String email){
+        return projectMapper.selectByEmail(email);
     }
 }

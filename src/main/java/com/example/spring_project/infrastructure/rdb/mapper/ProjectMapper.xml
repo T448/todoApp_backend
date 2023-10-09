@@ -49,4 +49,18 @@
         AND
         user_email = #{email}
 </select>
+<select id="selectByEmail">
+    SELECT
+        id
+        ,name
+        ,color
+        ,memo
+        ,user_email AS email
+        ,created_at AS createdAt
+        ,updated_at AS updatedAt
+    FROM
+        projects
+    WHERE
+        user_email = #{email}
+</select>
 </mapper>

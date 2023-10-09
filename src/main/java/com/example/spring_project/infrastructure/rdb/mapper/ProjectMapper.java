@@ -1,5 +1,7 @@
 package com.example.spring_project.infrastructure.rdb.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,6 +25,9 @@ public interface ProjectMapper {
     );
     public Project selectByNameAndEmail(
         @Param("name") String name,
+        @Param("email") String email
+    );
+    public List<Project> selectByEmail(
         @Param("email") String email
     );
 }
