@@ -10,21 +10,27 @@ import com.example.spring_project.domain.repository.ProjectRepository;
 import com.example.spring_project.infrastructure.rdb.mapper.ProjectMapper;
 
 @Service
-public class ProjectRepositoryDB implements ProjectRepository{
+public class ProjectRepositoryDB implements ProjectRepository {
     @Autowired
     private ProjectMapper projectMapper;
-    
+
     @Override
-    public void updateProject(String nameNew,String nameOld,String color,String memo,String email){
+    public void updateProject(String nameNew, String nameOld, String color, String memo, String email) {
         projectMapper.updateProject(nameNew, nameOld, color, memo, email);
     }
 
     @Override
-    public Project selectByNameAndEmail(String name,String email){
+    public Project selectByNameAndEmail(String name, String email) {
         return projectMapper.selectByNameAndEmail(name, email);
     }
+
     @Override
-    public List<Project> selectByEmail(String email){
+    public List<Project> selectByEmail(String email) {
         return projectMapper.selectByEmail(email);
+    }
+
+    @Override
+    public void insertProject(String id, String name, String color, String memo, String email) {
+        projectMapper.insertProject(id, name, color, memo, email);
     }
 }
