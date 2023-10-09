@@ -33,16 +33,21 @@ public class Interceptor implements HandlerInterceptor {
     private final HideValue hideValue;
 
     @Override
-    public boolean preHandle(HttpServletRequest request,HttpServletResponse response, Object handler) throws Exception {
-        String sessionID = request.getHeader(   "sessionID");
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
+        String sessionID = request.getHeader("sessionID");
         String requestURL = request.getRequestURL().toString();
         String loginURL = applicationProperty.get("spring.login_url");
-        if (requestURL.equals("http://localhost:8080/api/redis-flush")){
+        System.out.println("Interceptor");
+        System.out.println(sessionID);
+        System.out.println(requestURL);
+        System.out.println(loginURL);
+        if (requestURL.equals("http://localhost:8080/api/redis-flush")) {
             // redisのデータを全消去したいとき用
             // 以降のセッション系の処理とは無関係のためそのままreturn
             return true;
         }
-        if (requestURL.equals(loginURL)){
+        if (requestURL.equals(loginURL)) {
             // ログイン処理実行時にセッションを発行するので以降の処理は不要
             // そのままreturn
             return true;
@@ -50,17 +55,18 @@ public class Interceptor implements HandlerInterceptor {
         String checkSessionResultJsonString = sessionRepository.CheckSession(sessionID);
         System.out.println("checkSessionResultJsonString");
         System.out.println(checkSessionResultJsonString);
-        if (checkSessionResultJsonString == null){
+        if (checkSessionResultJsonString == null) {
             response.sendError(401, "sessionIDが不正です。");
             return false;
 
         }
-        ObjectMapper  objectMapperForRead = new ObjectMapper();
-        RedisUserInfo checkSessionResult = objectMapperForRead.readValue(checkSessionResultJsonString, RedisUserInfo.class);
+        ObjectMapper objectMapperForRead = new ObjectMapper();
+        RedisUserInfo checkSessionResult = objectMapperForRead.readValue(checkSessionResultJsonString,
+                RedisUserInfo.class);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         Date expires = dateFormat.parse(checkSessionResult.getExpires());
-        if(expires.after(new Date())){
+        if (expires.after(new Date())) {
             hideValue.setHideTokenValue(checkSessionResult.getAccessToken());
             hideValue.setHideEmailValue(checkSessionResult.getEmail());
             return true;
@@ -68,20 +74,23 @@ public class Interceptor implements HandlerInterceptor {
             System.out.println("refresh access token");
             try {
                 var refreshResult = googleOauthRepositoryImpl.RefreshAccessToken(
-                    new User(checkSessionResult.getEmail(),checkSessionResult.getName()),sessionID,checkSessionResult.getRefreshToken());
-                String  updatedAccessToken = refreshResult.getAccessToken();
+                        new User(checkSessionResult.getEmail(), checkSessionResult.getName()), sessionID,
+                        checkSessionResult.getRefreshToken());
+                String updatedAccessToken = refreshResult.getAccessToken();
                 hideValue.setHideTokenValue(updatedAccessToken);
                 hideValue.setHideEmailValue(checkSessionResult.getEmail());
-                RedisUserInfo updatedSessionInfo = new RedisUserInfo(checkSessionResult.getUlid(),checkSessionResult.getEmail(), checkSessionResult.getName(), updatedAccessToken, checkSessionResult.getRefreshToken(), refreshResult.getExpires());
-                
+                RedisUserInfo updatedSessionInfo = new RedisUserInfo(checkSessionResult.getUlid(),
+                        checkSessionResult.getEmail(), checkSessionResult.getName(), updatedAccessToken,
+                        checkSessionResult.getRefreshToken(), refreshResult.getExpires());
+
                 ObjectMapper objectMapperForWrite = new ObjectMapper();
                 objectMapperForWrite.enable(SerializationFeature.INDENT_OUTPUT);
                 String updatedSessionInfoJsonString = objectMapperForWrite.writeValueAsString(updatedSessionInfo);
 
                 sessionRepository.RefreshAccessToken(sessionID, updatedSessionInfoJsonString);
-                
+
             } catch (IOException e) {
-                response.sendError(400, "refresh failed \n"+e.toString());
+                response.sendError(400, "refresh failed \n" + e.toString());
                 return false;
             }
         }

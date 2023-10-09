@@ -4,8 +4,10 @@ import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 @AllArgsConstructor
 public class Event {
     private String id;
@@ -19,4 +21,8 @@ public class Event {
     private Date end;
     private Date created_at;
     private Date updated_at;
+
+    public void setProjectId(String newProjectIdId) {
+        this.project_id = newProjectIdId;
+    }
 }

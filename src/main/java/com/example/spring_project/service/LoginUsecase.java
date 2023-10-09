@@ -1,9 +1,12 @@
 package com.example.spring_project.service;
 
 import com.example.spring_project.common.methods.TimeCalculator;
+import com.example.spring_project.domain.entity.Project;
 import com.example.spring_project.domain.entity.User;
+import com.example.spring_project.domain.repository.GoogleCalendarGetCalendarListRepository;
 import com.example.spring_project.domain.repository.GoogleOauthRepository;
 import com.example.spring_project.domain.repository.GoogleRepository;
+import com.example.spring_project.domain.repository.ProjectRepository;
 import com.example.spring_project.domain.repository.SessionRepository;
 import com.example.spring_project.domain.repository.UserRepository;
 import com.example.spring_project.infrastructure.googleApi.response.GoogleGetUserInfoResponse;
@@ -36,36 +39,45 @@ public class LoginUsecase {
   private GoogleOauthRepository googleOauthRepository;
   @Autowired
   private GoogleRepository googleRepository;
+  @Autowired
+  private GoogleCalendarGetCalendarListRepository googleCalendarGetCalendarListRepository;
+  @Autowired
+  private ProjectRepository projectRepository;
+  private static final String GENERAL = "General";
 
   public String login(String authCode)
-    throws UnsupportedEncodingException {
-      // アクセストークン、リフレッシュトークン、有効期限を取得する
-      GoogleOauthResponse googleOauthResponse = googleOauthRepository.GetAccessToken(authCode);
-      String accessToken = googleOauthResponse.getAccessToken();
-      String refreshToken = googleOauthResponse.getRefreshToken();
-      String expiresIn = googleOauthResponse.getExpiresIn();
-      String expires = TimeCalculator.getTimeAfterSeconds(expiresIn);
+      throws UnsupportedEncodingException {
+    System.out.println("login");
+    // アクセストークン、リフレッシュトークン、有効期限を取得する
+    GoogleOauthResponse googleOauthResponse = googleOauthRepository.GetAccessToken(authCode);
+    String accessToken = googleOauthResponse.getAccessToken();
+    String refreshToken = googleOauthResponse.getRefreshToken();
+    String expiresIn = googleOauthResponse.getExpiresIn();
+    String expires = TimeCalculator.getTimeAfterSeconds(expiresIn);
 
-      // ユーザー情報の取得
-      GoogleGetUserInfoResponse userInfo =  googleRepository.GetUserInfo(accessToken);
-      String email = userInfo.getEmail();
-      email = email.replaceAll("\"", "");
-      String name = userInfo.getName();
-      name = name.replaceAll("\"", "");
-      ArrayList<User> user = userRepository.SelectByEmail(email);
-      // DBになければ登録
-      if (user.isEmpty()) {
-        user.add(new User(email, name));
-        userRepository.RegisterUser(user.get(0));
-      }
+    // ユーザー情報の取得
+    GoogleGetUserInfoResponse userInfo = googleRepository.GetUserInfo(accessToken);
+    String email = userInfo.getEmail();
+    email = email.replaceAll("\"", "");
+    String name = userInfo.getName();
+    name = name.replaceAll("\"", "");
+    ArrayList<User> user = userRepository.SelectByEmail(email);
+    String mainCalendarColor = googleCalendarGetCalendarListRepository.getMainCalendarColor(email, accessToken);
+    // DBになければ登録
+    if (user.isEmpty()) {
+      user.add(new User(email, name));
+      userRepository.RegisterUser(user.get(0), mainCalendarColor);
+    } else {
+      Project projectBeforeUpdate = projectRepository.selectByNameAndEmail(GENERAL, email);
+      projectRepository.updateProject(GENERAL, GENERAL, mainCalendarColor, projectBeforeUpdate.getMemo(), email);
+    }
 
-      // redisにユーザー情報、セッション情報を登録する。
-      String sessionId = sessionRepository.GenerateSession(
+    // redisにユーザー情報、セッション情報を登録する。
+    String sessionId = sessionRepository.GenerateSession(
         user.get(0),
         accessToken,
         refreshToken,
-        expires
-      );
-      return sessionId;
-    }
+        expires);
+    return sessionId;
+  }
 }
