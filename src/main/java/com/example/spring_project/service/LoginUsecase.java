@@ -1,8 +1,11 @@
 package com.example.spring_project.service;
 
 import com.example.spring_project.common.methods.TimeCalculator;
+import com.example.spring_project.domain.entity.Color;
 import com.example.spring_project.domain.entity.Project;
 import com.example.spring_project.domain.entity.User;
+import com.example.spring_project.domain.repository.ColorRepository;
+import com.example.spring_project.domain.repository.GoogleCalendarColorsRepository;
 import com.example.spring_project.domain.repository.GoogleCalendarGetCalendarListRepository;
 import com.example.spring_project.domain.repository.GoogleOauthRepository;
 import com.example.spring_project.domain.repository.GoogleRepository;
@@ -11,13 +14,20 @@ import com.example.spring_project.domain.repository.SessionRepository;
 import com.example.spring_project.domain.repository.UserRepository;
 import com.example.spring_project.infrastructure.googleApi.response.GoogleGetUserInfoResponse;
 import com.example.spring_project.infrastructure.googleApi.response.GoogleOauthResponse;
+import com.example.spring_project.infrastructure.rdb.mapper.ProjectMapper;
+
+import de.huxhorn.sulky.ulid.ULID;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class LoginUsecase {
 
   // login処理を行う。
@@ -43,6 +53,12 @@ public class LoginUsecase {
   private GoogleCalendarGetCalendarListRepository googleCalendarGetCalendarListRepository;
   @Autowired
   private ProjectRepository projectRepository;
+  @Autowired
+  private GoogleCalendarColorsRepository googleCalendarColorsRepository;
+  @Autowired
+  private ColorRepository colorRepository;
+  @Autowired
+  private ProjectMapper projectMapper;
   private static final String GENERAL = "General";
 
   public String login(String authCode)
@@ -62,14 +78,33 @@ public class LoginUsecase {
     String name = userInfo.getName();
     name = name.replaceAll("\"", "");
     ArrayList<User> user = userRepository.SelectByEmail(email);
-    String mainCalendarColor = googleCalendarGetCalendarListRepository.getMainCalendarColor(email, accessToken);
+    String mainCalendarColorId = googleCalendarGetCalendarListRepository.getMainCalendarColor(email, accessToken);
+    List<Color> googleCalendarColorList = googleCalendarColorsRepository.getGoogleCalendarColors(email, accessToken);
+    log.info("googleCalendarColorList");
+    log.info(googleCalendarColorList.toString());
     // DBになければ登録
     if (user.isEmpty()) {
-      user.add(new User(email, name));
-      userRepository.RegisterUser(user.get(0), mainCalendarColor);
+      log.info("add new user");
+      User newUser = new User(email, name);
+      user.add(newUser);
+      userRepository.RegisterUser(newUser);
+      try {
+        log.info("upsertColorList");
+        colorRepository.upsertColorList(googleCalendarColorList);
+      } catch (Exception error) {
+        log.error(error.toString());
+      }
+      try {
+        ULID ulid = new ULID();
+        log.info("insert project");
+        projectMapper.insertProject(ulid.nextULID(), GENERAL, mainCalendarColorId, "", email);
+      } catch (Exception error) {
+        log.error(error.toString());
+      }
     } else {
+      log.info("projectBeforeUpdate");
       Project projectBeforeUpdate = projectRepository.selectByNameAndEmail(GENERAL, email);
-      projectRepository.updateProject(GENERAL, GENERAL, mainCalendarColor, projectBeforeUpdate.getMemo(), email);
+      projectRepository.updateProject(GENERAL, GENERAL, mainCalendarColorId, projectBeforeUpdate.getMemo(), email);
     }
 
     // redisにユーザー情報、セッション情報を登録する。

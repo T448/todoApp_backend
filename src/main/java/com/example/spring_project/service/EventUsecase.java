@@ -69,7 +69,7 @@ public class EventUsecase {
                                 item.getShort_title(),
                                 item.getProject_id(),
                                 thisProjectDetail.getName(),
-                                thisProjectDetail.getColor(),
+                                thisProjectDetail.getColor_id(),
                                 item.getParent_event_id(),
                                 List.of(),
                                 item.getMemo(),
