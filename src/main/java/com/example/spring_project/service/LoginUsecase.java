@@ -7,6 +7,7 @@ import com.example.spring_project.domain.entity.User;
 import com.example.spring_project.domain.repository.ColorRepository;
 import com.example.spring_project.domain.repository.GoogleCalendarCalendarRepository;
 import com.example.spring_project.domain.repository.GoogleCalendarColorsRepository;
+import com.example.spring_project.domain.repository.GoogleCalendarEventRepository;
 import com.example.spring_project.domain.repository.GoogleCalendarGetCalendarListRepository;
 import com.example.spring_project.domain.repository.GoogleOauthRepository;
 import com.example.spring_project.domain.repository.GoogleRepository;
@@ -62,6 +63,8 @@ public class LoginUsecase {
   private ProjectMapper projectMapper;
   @Autowired
   private GoogleCalendarCalendarRepository googleCalendarCalendarRepository;
+  @Autowired
+  private GoogleCalendarEventRepository googleCalendarEventRepository;
   private static final String GENERAL = "General";
 
   public String login(String authCode)
@@ -125,6 +128,8 @@ public class LoginUsecase {
           email);
     }
     googleCalendarCalendarRepository.addNewCalendar(email, accessToken, "あたらしいかれんだー1", "めも");
+    googleCalendarEventRepository.addNewEvent("イベント1", "イベント1の説明", "2023-10-15T0:00:00", "2023-10-18T0:00:00",
+        "Asia/Tokyo", email, accessToken);
     // redisにユーザー情報、セッション情報を登録する。
     String sessionId = sessionRepository.GenerateSession(
         user.get(0),
