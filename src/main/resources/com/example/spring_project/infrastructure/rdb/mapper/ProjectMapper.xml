@@ -6,7 +6,7 @@
     (
         id,
         name,
-        color,
+        color_id,
         memo,
         user_email
     )
@@ -14,7 +14,7 @@
     (
         #{id},
         #{name},
-        #{color},
+        #{color_id},
         #{memo},
         #{email}
     )
@@ -24,7 +24,7 @@
         projects
     SET
         name = #{name_new}
-        , color = #{color}
+        , color_id = #{color_id}
         , memo = #{memo}
         , user_email = #{email}
         , updated_at = CURRENT_TIMESTAMP
@@ -37,7 +37,7 @@
     SELECT
         id
         ,name
-        ,color
+        ,color_id
         ,memo
         ,user_email AS email
         ,created_at AS createdAt
@@ -53,7 +53,7 @@
     SELECT
         id
         ,name
-        ,color
+        ,color_id
         ,memo
         ,user_email AS email
         ,created_at AS createdAt

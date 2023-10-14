@@ -15,8 +15,8 @@ public class ProjectRepositoryDB implements ProjectRepository {
     private ProjectMapper projectMapper;
 
     @Override
-    public void updateProject(String nameNew, String nameOld, String color, String memo, String email) {
-        projectMapper.updateProject(nameNew, nameOld, color, memo, email);
+    public void updateProject(String nameNew, String nameOld, String color_id, String memo, String email) {
+        projectMapper.updateProject(nameNew, nameOld, color_id, memo, email);
     }
 
     @Override

@@ -12,7 +12,7 @@ import lombok.ToString;
 public class Project {
     private String id;
     private String name;
-    private String color;
+    private String color_id;
     private String memo;
     private String email;
     private Date createdAt;
