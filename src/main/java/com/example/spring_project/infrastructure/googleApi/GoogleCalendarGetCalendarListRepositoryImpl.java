@@ -5,19 +5,24 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.spring_project.domain.entity.Project;
 import com.example.spring_project.domain.repository.GoogleCalendarGetCalendarListRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class GoogleCalendarGetCalendarListRepositoryImpl implements GoogleCalendarGetCalendarListRepository {
     private static final String REQUEST_URL = "https://www.googleapis.com/calendar/v3/users/me/calendarList";
 
     @Override
-    public String getMainCalendarColor(String email, String accessToken) {
+    public List<Project> getCalendarList(String email, String accessToken) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest
                 .newBuilder()
@@ -27,27 +32,33 @@ public class GoogleCalendarGetCalendarListRepositoryImpl implements GoogleCalend
                 .build();
 
         try {
+            log.info("GoogleCalendarGetCalendarListRepositoryImpl");
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = mapper.readTree(response.body()).get("items");
-            ArrayList<String> colorIdList = new ArrayList<>();
+            JsonNode node0 = mapper.readTree(response.body());
+            log.info("node0");
+            log.info(node0.toString());
+            var node = node0.get("items");
+            log.info("node");
+            log.info(node.toString());
+            ArrayList<Project> calendarList = new ArrayList<>();
             node.forEach(item -> {
-                if (item.get("id").toString().replaceAll("\"", "").equals(email)) {
-                    colorIdList.add(item.get("colorId").toString().replaceAll("\"", ""));
+                var memo = "";
+                if (item.get("description") != null) {
+                    memo = item.get("description").toString().replaceAll("\"", "");
                 }
+                calendarList.add(
+                        new Project(
+                                item.get("id").toString().replaceAll("\"", ""), "General",
+                                item.get("colorId").toString().replaceAll("\"", ""),
+                                memo,
+                                email,
+                                null,
+                                null));
             });
-            String colorId;
-            System.out.println("colorIdList");
-            System.out.println(colorIdList);
-            if (colorIdList.isEmpty()) {
-                colorId = "0";
-            } else {
-                colorId = colorIdList.get(0);
-            }
-            return colorId;
-
+            return calendarList;
         } catch (Exception error) {
-            System.out.println(error.toString());
+            log.error(error.toString());
             throw new IllegalArgumentException(error);
         }
     }

@@ -16,7 +16,6 @@ import com.example.spring_project.infrastructure.googleApi.response.GoogleGetUse
 import com.example.spring_project.infrastructure.googleApi.response.GoogleOauthResponse;
 import com.example.spring_project.infrastructure.rdb.mapper.ProjectMapper;
 
-import de.huxhorn.sulky.ulid.ULID;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.UnsupportedEncodingException;
@@ -73,13 +72,24 @@ public class LoginUsecase {
 
     // ユーザー情報の取得
     GoogleGetUserInfoResponse userInfo = googleRepository.GetUserInfo(accessToken);
-    String email = userInfo.getEmail();
-    email = email.replaceAll("\"", "");
+    String email = userInfo.getEmail().replaceAll("\"", "");
     String name = userInfo.getName();
     name = name.replaceAll("\"", "");
     ArrayList<User> user = userRepository.SelectByEmail(email);
-    String mainCalendarColorId = googleCalendarGetCalendarListRepository.getMainCalendarColor(email, accessToken);
+    log.info("user");
+    log.info(user.toString());
+    List<Project> calendarList = googleCalendarGetCalendarListRepository.getCalendarList(email, accessToken);
+    List<Project> mainCalendarList = calendarList
+        .stream()
+        .filter(item -> item.getId().equals(email))
+        .toList();
+    var mainCalendar = new Project("", "", "", "", email, null, null);
+    if (!mainCalendarList.isEmpty()) {
+      mainCalendar = mainCalendarList.get(0);
+    }
     List<Color> googleCalendarColorList = googleCalendarColorsRepository.getGoogleCalendarColors(email, accessToken);
+    log.info("mainCalendar");
+    log.info(mainCalendar.toString());
     log.info("googleCalendarColorList");
     log.info(googleCalendarColorList.toString());
     // DBになければ登録
@@ -95,16 +105,20 @@ public class LoginUsecase {
         log.error(error.toString());
       }
       try {
-        ULID ulid = new ULID();
-        log.info("insert project");
-        projectMapper.insertProject(ulid.nextULID(), GENERAL, mainCalendarColorId, "", email);
+        if (!mainCalendar.getId().equals("")) {
+          log.info("insert project");
+          projectMapper.insertProject(mainCalendar.getId(), GENERAL, mainCalendar.getColor_id(), mainCalendar.getMemo(),
+              email);
+        }
       } catch (Exception error) {
         log.error(error.toString());
       }
     } else {
+      // TODO : colorsテーブルの更新、projectテーブルの更新を行うように書き換える。
       log.info("projectBeforeUpdate");
       Project projectBeforeUpdate = projectRepository.selectByNameAndEmail(GENERAL, email);
-      projectRepository.updateProject(GENERAL, GENERAL, mainCalendarColorId, projectBeforeUpdate.getMemo(), email);
+      projectRepository.updateProject(GENERAL, GENERAL, mainCalendar.getColor_id(), projectBeforeUpdate.getMemo(),
+          email);
     }
 
     // redisにユーザー情報、セッション情報を登録する。
