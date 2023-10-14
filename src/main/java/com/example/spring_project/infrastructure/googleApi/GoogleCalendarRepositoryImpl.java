@@ -18,7 +18,10 @@ import com.example.spring_project.domain.repository.GoogleCalendarRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
 
     @Override
@@ -35,7 +38,8 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
             }
 
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            log.error(e.toString());
         }
 
         HttpClient client = HttpClient.newHttpClient();
@@ -62,8 +66,8 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
 
             for (int i = 0; i < loopCount; i++) {
                 JsonNode event = node.get(i);
-                System.out.println("event");
-                System.out.println(event);
+                // System.out.println("event");
+                // System.out.println(event);
 
                 if (event.has("summary")) {
                     String id = event.get("id").toString();
@@ -133,7 +137,8 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            log.error(e.toString());
         }
         return events;
     }

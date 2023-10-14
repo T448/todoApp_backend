@@ -33,7 +33,7 @@ public class EventUsecase {
             List<Event> eventList = googleCalendarRepository.GetGoogleCalendarEvents(email, accessToken,
                     latestUpdatedDate);
             System.out.println("---------------eventList---------------");
-            System.out.println(eventList);
+            // System.out.println(eventList);
             Number registerResult = -1;
             if (!eventList.isEmpty()) {
                 Project generalProject = projectRepository.selectByNameAndEmail("General", email);

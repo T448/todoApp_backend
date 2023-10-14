@@ -15,7 +15,10 @@ import com.example.spring_project.domain.repository.GoogleCalendarColorsReposito
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class GoogleCalendarColorsRepositoryImpl implements GoogleCalendarColorsRepository {
     private static final String REQUEST_URL = "https://www.googleapis.com/calendar/v3/colors";
 
@@ -44,7 +47,8 @@ public class GoogleCalendarColorsRepositoryImpl implements GoogleCalendarColorsR
 
             return colorList;
         } catch (Exception error) {
-            System.out.println(error.toString());
+            // System.out.println(error.toString());
+            log.error(error.toString());
             throw new IllegalArgumentException(error);
         }
     }
