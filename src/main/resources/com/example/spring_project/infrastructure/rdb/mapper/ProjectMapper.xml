@@ -63,4 +63,65 @@
     WHERE
         user_email = #{email}
 </select>
+<update id="updateProjectById">
+    UPDATE
+        projects
+    SET
+        name = #{project.name}
+        , color_id = #{project.color_id}
+        , memo = #{project.memo}
+        , user_email = #{project.email}
+        , updated_at = CURRENT_TIMESTAMP
+    WHERE
+        id = #{project.id}
+</update>
+<update id="updateProjects">
+    UPDATE
+        projects
+    SET
+        name = ELT(FIELD(id,
+            <foreach collection="project_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="project_list" item="item" separator=",">
+            #{item.name}
+        </foreach>
+        ),
+        color_id = ELT(FIELD(id,
+            <foreach collection="project_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="project_list" item="item" separator=",">
+            #{item.color_id}
+        </foreach>
+        ),
+        memo = ELT(FIELD(id,
+            <foreach collection="project_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="project_list" item="item" separator=",">
+            #{item.memo}
+        </foreach>
+        ),
+        user_email = ELT(FIELD(id,
+            <foreach collection="project_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="project_list" item="item" separator=",">
+            #{item.email}
+        </foreach>
+        ),
+        updated_at = CURRENT_TIMESTAMP
+    WHERE
+        id IN
+        (
+            <foreach collection="project_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        )
+</update>
 </mapper>

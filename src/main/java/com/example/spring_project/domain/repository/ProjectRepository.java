@@ -12,4 +12,8 @@ public interface ProjectRepository {
     public List<Project> selectByEmail(String email);
 
     public void insertProject(String id, String name, String color_id, String memo, String email);
+
+    public void updateProjectById(Project project);
+
+    public void updateProjects(List<Project> project_list);
 }
