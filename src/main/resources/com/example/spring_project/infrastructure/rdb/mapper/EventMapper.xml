@@ -65,4 +65,106 @@ WHERE
     LIMIT
         1
 </select>
+<update id="updateEvent" parameterType="com.example.spring_project.domain.entity.Event">
+    UPDATE
+        events
+    SET
+        user_email = #{event.email}
+        , title = #{event.title}
+        , short_title = #{event.short_title}
+        , project_id = #{event.project_id}
+        , parent_event_id = #{event.parent_event_id}
+        , memo = #{event.memo}
+        , start = #{event.start}
+        , end = #{event.end}
+        , updated_at = CURRENT_TIMESTAMP
+    WHERE
+        id = #{event.id}
+</update>
+<update id="updateEvents">
+    UPDATE
+        events
+    SET
+        user_email = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.email}
+        </foreach>
+        ),
+        title = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.title}
+        </foreach>
+        ),
+        short_title = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.short_title}
+        </foreach>
+        ),
+        project_id = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.project_id}
+        </foreach>
+        ),
+        parent_event_id = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.parent_event_id}
+        </foreach>
+        ),
+        memo = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.memo}
+        </foreach>
+        ),
+        start = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.start}
+        </foreach>
+        ),
+        end = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.end}
+        </foreach>
+        ),
+        updated_at = CURRENT_TIMESTAMP
+    WHERE
+        id IN
+        (
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+
+        )
+</update>
 </mapper>

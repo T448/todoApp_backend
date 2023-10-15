@@ -47,4 +47,14 @@ public class EventRepositoryDB implements EventRepository {
     public Date GetLatestUpdatedDate(String email) {
         return eventMapper.getLatestUpdatedDate(email);
     }
+
+    @Override
+    public void UpdateEvent(Event event) {
+        eventMapper.updateEvent(event);
+    }
+
+    @Override
+    public void UpdateEvents(List<Event> eventList) {
+        eventMapper.updateEvents(eventList);
+    }
 }
