@@ -50,7 +50,7 @@ public class GoogleCalendarCalendarRepositoryImpl implements GoogleCalendarCalen
             if (responseNode.has("id")) {
                 return responseNode.get("id").toString().replaceAll("\"", "");
             } else {
-                return responseNode.get("error").get("message").toString();
+                return "[error]" + responseNode.get("error").get("message").toString();
             }
         } catch (Exception e) {
             log.error(e.toString());
