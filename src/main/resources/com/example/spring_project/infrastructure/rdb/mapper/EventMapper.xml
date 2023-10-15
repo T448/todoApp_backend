@@ -28,8 +28,8 @@
         #{item.memo},
         #{item.start},
         #{item.end},
-        #{item.created_at},
-        #{item.updated_at}
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
     )
     </foreach>
 </insert>

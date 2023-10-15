@@ -1,5 +1,6 @@
 package com.example.spring_project.service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import com.example.spring_project.domain.entity.Event;
 import com.example.spring_project.domain.entity.Project;
 import com.example.spring_project.domain.repository.ColorRepository;
 import com.example.spring_project.domain.repository.EventRepository;
+import com.example.spring_project.domain.repository.GoogleCalendarEventRepository;
 import com.example.spring_project.domain.repository.GoogleCalendarRepository;
 import com.example.spring_project.domain.repository.ProjectRepository;
 
@@ -28,6 +30,8 @@ public class EventUsecase {
     ProjectRepository projectRepository;
     @Autowired
     ColorRepository colorRepository;
+    @Autowired
+    GoogleCalendarEventRepository googleCalendarEventRepository;
 
     public List<EventDto> getEvents(String accessToken, String email, Boolean all) {
         Date latestUpdatedDate = eventRepository.GetLatestUpdatedDate(email);
@@ -97,5 +101,41 @@ public class EventUsecase {
         } catch (Exception e) {
             throw new Error(e.toString());
         }
+    }
+
+    public String addEvents(String name,
+            String memo,
+            String projectId,
+            String parentEventId,
+            String startDateTime,
+            String endDateTime,
+            String timeZone, String accessToken, String email) {
+        String newEventId = googleCalendarEventRepository.addNewEvent(name, memo, startDateTime, endDateTime,
+                timeZone, projectId, accessToken);
+
+        if (!newEventId.startsWith("[error]", 0)) {
+            String shortTitle = name;
+            if (shortTitle.length() > 10) {
+                shortTitle = shortTitle.substring(0, 10) + "...";
+            }
+            SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+            Date start;
+            try {
+                start = sdFormat.parse(startDateTime);
+            } catch (ParseException e) {
+                start = new Date();
+            }
+            Date end;
+            try {
+                end = sdFormat.parse(endDateTime);
+            } catch (ParseException e) {
+                end = new Date();
+            }
+            eventRepository.RegisterEvents(
+                    List.of(
+                            new Event(newEventId, email, name, shortTitle, projectId, parentEventId, memo, start, end,
+                                    null, null)));
+        }
+        return newEventId;
     }
 }
