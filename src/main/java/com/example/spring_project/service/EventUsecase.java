@@ -9,8 +9,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.spring_project.domain.entity.Color;
 import com.example.spring_project.domain.entity.Event;
 import com.example.spring_project.domain.entity.Project;
+import com.example.spring_project.domain.repository.ColorRepository;
 import com.example.spring_project.domain.repository.EventRepository;
 import com.example.spring_project.domain.repository.GoogleCalendarRepository;
 import com.example.spring_project.domain.repository.ProjectRepository;
@@ -24,6 +26,8 @@ public class EventUsecase {
     EventRepository eventRepository;
     @Autowired
     ProjectRepository projectRepository;
+    @Autowired
+    ColorRepository colorRepository;
 
     public List<EventDto> getEvents(String accessToken, String email, Boolean all) {
         Date latestUpdatedDate = eventRepository.GetLatestUpdatedDate(email);
@@ -54,6 +58,11 @@ public class EventUsecase {
             List<Event> getEventListResult = eventRepository.GetEvents(email, latestUpdatedDate);
             System.out.println(getEventListResult);
             List<Project> projectList = projectRepository.selectByEmail(email);
+            List<Color> colorList = colorRepository.selectByEmail(email);
+            Map<String, String> colorIdAndCodeMap = new HashMap<String, String>();
+            colorList.forEach(item -> {
+                colorIdAndCodeMap.put(item.getId(), item.getCode());
+            });
             Map<String, Project> projectIdAndDetailMap = new HashMap<String, Project>();
 
             projectList.forEach(item -> projectIdAndDetailMap.put(item.getId(), item));
@@ -62,6 +71,10 @@ public class EventUsecase {
                     .map(item -> {
                         String thisProjectId = item.getProject_id();
                         Project thisProjectDetail = projectIdAndDetailMap.get(thisProjectId);
+                        String colorCode = "#000000";
+                        if (colorIdAndCodeMap.containsKey(thisProjectDetail.getColor_id())) {
+                            colorCode = colorIdAndCodeMap.get(thisProjectDetail.getColor_id());
+                        }
                         return new EventDto(
                                 item.getId(),
                                 item.getEmail(),
@@ -69,7 +82,7 @@ public class EventUsecase {
                                 item.getShort_title(),
                                 item.getProject_id(),
                                 thisProjectDetail.getName(),
-                                thisProjectDetail.getColor_id(),
+                                colorCode,
                                 item.getParent_event_id(),
                                 List.of(),
                                 item.getMemo(),
