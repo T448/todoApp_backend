@@ -2,19 +2,20 @@ package com.example.spring_project.service;
 
 import com.example.spring_project.common.methods.TimeCalculator;
 import com.example.spring_project.domain.entity.Color;
+
 import com.example.spring_project.domain.entity.Project;
 import com.example.spring_project.domain.entity.User;
 import com.example.spring_project.domain.repository.ColorRepository;
-import com.example.spring_project.domain.repository.GoogleCalendarCalendarRepository;
+
 import com.example.spring_project.domain.repository.GoogleCalendarColorsRepository;
-import com.example.spring_project.domain.repository.GoogleCalendarEventRepository;
+
 import com.example.spring_project.domain.repository.GoogleCalendarGetCalendarListRepository;
 import com.example.spring_project.domain.repository.GoogleOauthRepository;
 import com.example.spring_project.domain.repository.GoogleRepository;
 import com.example.spring_project.domain.repository.ProjectRepository;
 import com.example.spring_project.domain.repository.SessionRepository;
 import com.example.spring_project.domain.repository.UserRepository;
-import com.example.spring_project.infrastructure.googleApi.request.GoogleCalendarAddCalendarRequest;
+
 import com.example.spring_project.infrastructure.googleApi.response.GoogleGetUserInfoResponse;
 import com.example.spring_project.infrastructure.googleApi.response.GoogleOauthResponse;
 import com.example.spring_project.infrastructure.rdb.mapper.ProjectMapper;
@@ -61,10 +62,7 @@ public class LoginUsecase {
   private ColorRepository colorRepository;
   @Autowired
   private ProjectMapper projectMapper;
-  @Autowired
-  private GoogleCalendarCalendarRepository googleCalendarCalendarRepository;
-  @Autowired
-  private GoogleCalendarEventRepository googleCalendarEventRepository;
+
   private static final String GENERAL = "General";
 
   public String login(String authCode)
@@ -127,14 +125,6 @@ public class LoginUsecase {
       projectRepository.updateProject(GENERAL, GENERAL, mainCalendar.getColor_id(), projectBeforeUpdate.getMemo(),
           email);
     }
-    String nreCalendarId = googleCalendarCalendarRepository.addNewCalendar(email, accessToken, "あたらしいかれんだー1", "めも");
-    log.info("nreCalendarId");
-    log.info(nreCalendarId);
-    String newEventId = googleCalendarEventRepository.addNewEvent("イベント1", "イベント1の説明", "2023-10-15T0:00:00",
-        "2023-10-18T0:00:00",
-        "Asia/Tokyo", email, accessToken);
-    log.info("newEventId");
-    log.info(newEventId);
     // redisにユーザー情報、セッション情報を登録する。
     String sessionId = sessionRepository.GenerateSession(
         user.get(0),
