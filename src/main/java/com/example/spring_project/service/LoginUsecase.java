@@ -127,7 +127,9 @@ public class LoginUsecase {
       projectRepository.updateProject(GENERAL, GENERAL, mainCalendar.getColor_id(), projectBeforeUpdate.getMemo(),
           email);
     }
-    googleCalendarCalendarRepository.addNewCalendar(email, accessToken, "あたらしいかれんだー1", "めも");
+    String nreCalendarId = googleCalendarCalendarRepository.addNewCalendar(email, accessToken, "あたらしいかれんだー1", "めも");
+    log.info("nreCalendarId");
+    log.info(nreCalendarId);
     String newEventId = googleCalendarEventRepository.addNewEvent("イベント1", "イベント1の説明", "2023-10-15T0:00:00",
         "2023-10-18T0:00:00",
         "Asia/Tokyo", email, accessToken);

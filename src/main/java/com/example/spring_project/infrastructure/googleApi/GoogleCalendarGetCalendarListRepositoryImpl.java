@@ -56,6 +56,7 @@ public class GoogleCalendarGetCalendarListRepositoryImpl implements GoogleCalend
                                 null,
                                 null));
             });
+            log.info(calendarList.toString());
             return calendarList;
         } catch (Exception error) {
             log.error(error.toString());
