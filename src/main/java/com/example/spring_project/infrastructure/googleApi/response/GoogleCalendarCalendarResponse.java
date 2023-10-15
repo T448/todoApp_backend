@@ -1,4 +1,4 @@
-package com.example.spring_project.presentation.model.request;
+package com.example.spring_project.infrastructure.googleApi.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,11 +7,9 @@ import lombok.ToString;
 @Getter
 @ToString
 @AllArgsConstructor
-public class ProjectRequest {
+public class GoogleCalendarCalendarResponse {
+    private String id;
     private String name;
     private String memo;
-
-    public ProjectRequest() {
-
-    }
+    private String colorId;
 }

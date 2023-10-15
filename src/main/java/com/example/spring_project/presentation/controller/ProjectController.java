@@ -58,7 +58,6 @@ public class ProjectController {
         String email = hideValue.getHideEmailValue();
         projectUsecase.addNewProject(
                 request.getName(),
-                request.getColor(),
                 request.getMemo(),
                 email);
     }
