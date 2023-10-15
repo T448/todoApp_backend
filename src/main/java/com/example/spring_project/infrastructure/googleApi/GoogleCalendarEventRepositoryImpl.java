@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.spring_project.domain.repository.GoogleCalendarEventRepository;
 import com.example.spring_project.infrastructure.googleApi.request.GoogleCalendarAddEventRequest;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -20,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GoogleCalendarEventRepositoryImpl implements GoogleCalendarEventRepository {
 
     @Override
-    public void addNewEvent(String summary, String description, String startDateTime, String endDateTime,
+    public String addNewEvent(String summary, String description, String startDateTime, String endDateTime,
             String timeZone, String calendarId, String accessToken) {
         String requestUrl = "";
         try {
@@ -55,11 +56,20 @@ public class GoogleCalendarEventRepositoryImpl implements GoogleCalendarEventRep
             try {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 log.info(response.toString());
+                ObjectMapper responseObjectMapper = new ObjectMapper();
+                JsonNode responseNode = responseObjectMapper.readTree(response.body());
+                if (responseNode.has("id")) {
+                    return responseNode.get("id").toString().replaceAll("\"", "");
+                } else {
+                    return responseNode.get("error").get("message").toString();
+                }
             } catch (Exception e) {
                 log.error(e.toString());
+                throw new IllegalArgumentException(e.toString());
             }
         } else {
             log.error("calendarIDが不適切");
+            throw new IllegalArgumentException("calendarIDが不適切");
         }
     }
 }

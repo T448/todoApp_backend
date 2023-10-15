@@ -128,8 +128,11 @@ public class LoginUsecase {
           email);
     }
     googleCalendarCalendarRepository.addNewCalendar(email, accessToken, "あたらしいかれんだー1", "めも");
-    googleCalendarEventRepository.addNewEvent("イベント1", "イベント1の説明", "2023-10-15T0:00:00", "2023-10-18T0:00:00",
+    String newEventId = googleCalendarEventRepository.addNewEvent("イベント1", "イベント1の説明", "2023-10-15T0:00:00",
+        "2023-10-18T0:00:00",
         "Asia/Tokyo", email, accessToken);
+    log.info("newEventId");
+    log.info(newEventId);
     // redisにユーザー情報、セッション情報を登録する。
     String sessionId = sessionRepository.GenerateSession(
         user.get(0),
