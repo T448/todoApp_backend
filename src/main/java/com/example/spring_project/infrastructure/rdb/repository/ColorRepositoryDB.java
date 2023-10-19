@@ -24,4 +24,9 @@ public class ColorRepositoryDB implements ColorRepository {
     public void upsertColorList(List<Color> colorList) {
         colorMapper.upsertColorList(colorList);
     }
+
+    @Override
+    public void deleteColorList(List<Color> colorList) {
+        colorMapper.deleteColorList(colorList);
+    }
 }

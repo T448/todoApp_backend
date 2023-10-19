@@ -12,4 +12,6 @@ public interface ColorMapper {
     public List<Color> selectByEmail(@Param("user_email") String email);
 
     public void upsertColorList(@Param("color_list") List<Color> colorList);
+
+    public void deleteColorList(@Param("color_kist") List<Color> colorList);
 }

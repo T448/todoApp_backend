@@ -29,4 +29,17 @@
         , user_email=VALUES(user_email)
         , code=VALUES(code)
 </insert>
+<delete id="deleteColorList" parameterType="java.util.List">
+    DELETE FROM colors
+    WHERE
+        id IN
+        <foreach collection="color_list" item="item" separator=",">
+            #{item.id}
+        </foreach>
+        AND
+        user_email IN
+        <foreach collection="color_list" item="item" separator=",">
+            #{item.email}
+        </foreach>
+</delete>
 </mapper>

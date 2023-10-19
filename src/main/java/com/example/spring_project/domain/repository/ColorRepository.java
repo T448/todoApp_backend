@@ -8,4 +8,6 @@ public interface ColorRepository {
     public List<Color> selectByEmail(String email);
 
     public void upsertColorList(List<Color> colorList);
+
+    public void deleteColorList(List<Color> colorList);
 }
