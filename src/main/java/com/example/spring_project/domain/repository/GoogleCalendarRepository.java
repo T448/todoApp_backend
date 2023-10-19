@@ -6,5 +6,5 @@ import java.util.Date;
 import com.example.spring_project.domain.entity.Event;
 
 public interface GoogleCalendarRepository {
-    public List<Event> GetGoogleCalendarEvents(String email,String accessToken,Date updatedMin);
+    public List<Event> GetGoogleCalendarEvents(String email, String accessToken, Date updatedMin, String calendarId);
 }

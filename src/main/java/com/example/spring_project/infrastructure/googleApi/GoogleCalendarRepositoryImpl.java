@@ -25,14 +25,15 @@ import lombok.extern.slf4j.Slf4j;
 public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
 
     @Override
-    public ArrayList<Event> GetGoogleCalendarEvents(String email, String accessToken, Date updatedMin) {
+    public ArrayList<Event> GetGoogleCalendarEvents(String email, String accessToken, Date updatedMin,
+            String calendarId) {
         ArrayList<Event> events = new ArrayList<Event>();
         String requestUrl = "https://www.googleapis.com/calendar/v3/calendars/";
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
         System.out.println("GetGoogleCalendarEvents updatedMin");
         System.out.println(updatedMin);
         try {
-            requestUrl += URLEncoder.encode(email, "UTF-8") + "/events";
+            requestUrl += URLEncoder.encode(calendarId, "UTF-8") + "/events";
             if (updatedMin != null) {
                 requestUrl += "?updatedMin=" + sf.format(updatedMin);
             }
@@ -65,11 +66,13 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
             Integer loopCount = node.size();
 
             for (int i = 0; i < loopCount; i++) {
+                log.info("eventNum".replace("Num", String.valueOf(i)));
                 JsonNode event = node.get(i);
                 // System.out.println("event");
                 // System.out.println(event);
-
+                log.info("eventNum".replace("Num", String.valueOf(i)));
                 if (event.has("summary")) {
+                    log.info(event.toString());
                     String id = event.get("id").toString();
                     String created_at = event.get("created").toString();
                     String updated_at = event.get("updated").toString();
@@ -126,7 +129,7 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
                     Date created_at_Date = created_at_dateFormat.parse(created_at);
                     Date updated_at_Date = updated_at_dateFormat.parse(updated_at);
 
-                    String projectId = "";
+                    String projectId = calendarId;
                     String parentEventId = "";
                     String memo = "";
 

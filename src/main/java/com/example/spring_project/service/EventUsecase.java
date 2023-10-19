@@ -39,7 +39,7 @@ public class EventUsecase {
         System.out.println(latestUpdatedDate);
         try {
             List<Event> eventList = googleCalendarRepository.GetGoogleCalendarEvents(email, accessToken,
-                    latestUpdatedDate);
+                    latestUpdatedDate, email);
             System.out.println("---------------eventList---------------");
             // System.out.println(eventList);
             Number registerResult = -1;
