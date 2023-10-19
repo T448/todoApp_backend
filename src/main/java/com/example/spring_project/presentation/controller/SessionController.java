@@ -32,7 +32,10 @@ public class SessionController {
         String accessToken = hideValue.getHideTokenValue();
 
         Project projectBeforeUpdate = projectRepository.selectByNameAndEmail(GENERAL, email);
-        String memoBeforeUpdate = projectBeforeUpdate.getMemo();
+        String memoBeforeUpdate = "";
+        if (projectBeforeUpdate != null) {
+            memoBeforeUpdate = projectBeforeUpdate.getMemo();
+        }
         List<Project> calendarList = googleCalendarGetCalendarListRepository.getCalendarList(email, accessToken);
         List<Project> mainCalendarList = calendarList
                 .stream()
