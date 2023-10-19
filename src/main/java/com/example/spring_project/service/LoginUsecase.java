@@ -122,7 +122,11 @@ public class LoginUsecase {
       // TODO : colorsテーブルの更新、projectテーブルの更新を行うように書き換える。
       log.info("projectBeforeUpdate");
       Project projectBeforeUpdate = projectRepository.selectByNameAndEmail(GENERAL, email);
-      projectRepository.updateProject(GENERAL, GENERAL, mainCalendar.getColor_id(), projectBeforeUpdate.getMemo(),
+      String memoBeforeUpdate = "";
+      if (projectBeforeUpdate != null) {
+        memoBeforeUpdate = projectBeforeUpdate.getMemo();
+      }
+      projectRepository.updateProject(GENERAL, GENERAL, mainCalendar.getColor_id(), memoBeforeUpdate,
           email);
     }
     // redisにユーザー情報、セッション情報を登録する。
