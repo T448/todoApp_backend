@@ -20,4 +20,8 @@ public interface EventMapper {
 
     public void updateEvents(@Param("event_list") List<Event> eventList);
 
+    public List<Event> selectByEmail(@Param("user_email") String email);
+
+    public void deleteEvents(@Param("event_list") List<Event> eventList);
+
 }

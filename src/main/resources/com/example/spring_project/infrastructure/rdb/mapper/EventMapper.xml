@@ -167,4 +167,31 @@ WHERE
 
         )
 </update>
+<select id="selectByEmail">
+    SELECT
+        id,
+        user_email,
+        title,
+        short_title,
+        project_id,
+        parent_event_id,
+        memo,
+        start,
+        end,
+        created_at,
+        updated_at
+    FROM 
+        events
+    WHERE
+        user_email = #{user_email}
+</select>
+<delete id="deleteEvents">
+    DELETE FROM events
+        WHERE id IN
+        (
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        )
+</delete>
 </mapper>

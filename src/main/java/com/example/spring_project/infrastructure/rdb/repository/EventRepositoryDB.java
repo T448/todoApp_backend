@@ -57,4 +57,14 @@ public class EventRepositoryDB implements EventRepository {
     public void UpdateEvents(List<Event> eventList) {
         eventMapper.updateEvents(eventList);
     }
+
+    @Override
+    public List<Event> selectByEmail(String email) {
+        return eventMapper.selectByEmail(email);
+    }
+
+    @Override
+    public void deleteEvents(List<Event> eventList) {
+        eventMapper.deleteEvents(eventList);
+    }
 }
