@@ -4,7 +4,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.checkerframework.common.value.qual.ArrayLen;
 import org.springframework.stereotype.Service;
 
 import com.example.spring_project.domain.entity.Project;
@@ -94,5 +97,48 @@ public class GoogleCalendarCalendarRepositoryImpl implements GoogleCalendarCalen
             throw new IllegalArgumentException(e.toString());
         }
         return new Project(id, accessToken, id, id, accessToken, null, null);
+    }
+
+    @Override
+    public List<Project> getCalendarList(String accessToken, String email) {
+        String requestUrl = "https://www.googleapis.com/calendar/v3/users/me/calendarList";
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest
+                .newBuilder()
+                .uri(URI.create(requestUrl))
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Content-Type", "application/json")
+                .header("charset", "UTF-8")
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            ObjectMapper responseObjectMapper = new ObjectMapper();
+            JsonNode responseNode = responseObjectMapper.readTree(response.body());
+
+            if (responseNode.has("items")) {
+                ArrayList<Project> projectList = new ArrayList<>();
+                responseNode.get("items").forEach(item -> {
+                    String memo = "";
+                    if (item.has("description")) {
+                        memo = item.get("description").toString().replaceAll("\"", "");
+                    }
+                    projectList.add(new Project(
+                            item.get("id").toString().replaceAll("\"", ""),
+                            item.get("summary").toString().replaceAll("\"", ""),
+                            item.get("colorId").toString().replaceAll("\"", ""),
+                            memo,
+                            email,
+                            null,
+                            null));
+                });
+                return projectList;
+            }
+        } catch (Exception e) {
+            log.error(e.toString());
+            throw new IllegalArgumentException(e.toString());
+        }
+        return List.of();
+
     }
 }
