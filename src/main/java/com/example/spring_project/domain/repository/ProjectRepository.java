@@ -16,4 +16,8 @@ public interface ProjectRepository {
     public void updateProjectById(Project project);
 
     public void updateProjects(List<Project> project_list);
+
+    public void insertProjects(List<Project> project_list);
+
+    public void deleteProjects(List<Project> project_list);
 }

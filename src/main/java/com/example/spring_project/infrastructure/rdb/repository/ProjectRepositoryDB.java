@@ -43,4 +43,14 @@ public class ProjectRepositoryDB implements ProjectRepository {
     public void updateProjects(List<Project> projectList) {
         projectMapper.updateProjects(projectList);
     };
+
+    @Override
+    public void insertProjects(List<Project> project_list) {
+        projectMapper.insertProjects(project_list);
+    }
+
+    @Override
+    public void deleteProjects(List<Project> project_list) {
+        projectMapper.deleteProjects(project_list);
+    }
 }

@@ -124,4 +124,31 @@
             </foreach>
         )
 </update>
+<insert id="insertProjects">
+    INSERT IGNORE INTO projects
+    (
+        id,
+        name,
+        color_id,
+        memo,
+        user_email
+    )
+    VALUES
+    <foreach collection="project_list" item="item" separator=",">
+    (
+        #{item.id},
+        #{item.name},
+        #{item.color_id},
+        #{item.memo},
+        #{item.email}
+    )
+    </foreach>
+</insert>
+<delete id="deleteEvents">
+    DELETE FROM events
+    WHERE id IN
+    <foreach collection="project_list" item="item" separator=",">
+        #{item.id}
+    </foreach>
+</delete>
 </mapper>
