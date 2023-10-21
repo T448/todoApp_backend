@@ -163,7 +163,6 @@ public class EventUsecase {
             String name,
             String memo,
             String projectId,
-            String parentEventId,
             String startDateTimeStr,
             String endDateTimeStr,
             String timeZone,
@@ -191,7 +190,7 @@ public class EventUsecase {
             }
 
             Event updatedEvent = new Event(
-                    eventId, email, name, name, projectId, parentEventId, memo, startDateTime, endDateTime, null, null);
+                    eventId, email, name, name, projectId, null, memo, startDateTime, endDateTime, null, null);
             eventRepository.UpdateEvent(updatedEvent);
         }
         return updateResponseFromGoogleCalendar;

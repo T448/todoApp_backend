@@ -73,7 +73,6 @@ WHERE
         , title = #{event.title}
         , short_title = #{event.short_title}
         , project_id = #{event.project_id}
-        , parent_event_id = #{event.parent_event_id}
         , memo = #{event.memo}
         , start = #{event.start}
         , end = #{event.end}
@@ -119,15 +118,6 @@ WHERE
         ),
         <foreach collection="event_list" item="item" separator=",">
             #{item.project_id}
-        </foreach>
-        ),
-        parent_event_id = ELT(FIELD(id,
-            <foreach collection="event_list" item="item" separator=",">
-                #{item.id}
-            </foreach>
-        ),
-        <foreach collection="event_list" item="item" separator=",">
-            #{item.parent_event_id}
         </foreach>
         ),
         memo = ELT(FIELD(id,
