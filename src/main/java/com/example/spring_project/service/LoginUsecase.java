@@ -55,8 +55,6 @@ public class LoginUsecase {
   @Autowired
   private GoogleCalendarGetCalendarListRepository googleCalendarGetCalendarListRepository;
   @Autowired
-  private ProjectRepository projectRepository;
-  @Autowired
   private GoogleCalendarColorsRepository googleCalendarColorsRepository;
   @Autowired
   private ColorRepository colorRepository;
@@ -118,16 +116,6 @@ public class LoginUsecase {
       } catch (Exception error) {
         log.error(error.toString());
       }
-    } else {
-      // TODO : colorsテーブルの更新、projectテーブルの更新を行うように書き換える。
-      log.info("projectBeforeUpdate");
-      Project projectBeforeUpdate = projectRepository.selectByNameAndEmail(GENERAL, email);
-      String memoBeforeUpdate = "";
-      if (projectBeforeUpdate != null) {
-        memoBeforeUpdate = projectBeforeUpdate.getMemo();
-      }
-      projectRepository.updateProject(GENERAL, GENERAL, mainCalendar.getColor_id(), memoBeforeUpdate,
-          email);
     }
     // redisにユーザー情報、セッション情報を登録する。
     String sessionId = sessionRepository.GenerateSession(
