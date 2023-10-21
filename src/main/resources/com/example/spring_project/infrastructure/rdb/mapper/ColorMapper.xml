@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_project.infrastructure.rdb.mapper.ColorMapper">
+<select id="selectByEmail">
+    SELECT
+        *
+    FROM
+        colors
+    WHERE
+        user_email = #{user_email}
+</select>
+<insert id="upsertColorList" parameterType="java.util.List">
+    INSERT INTO colors
+    (
+        id
+        , user_email
+        , code
+    )
+    VALUES
+    <foreach collection="color_list" item="item" separator=",">
+    (
+        #{item.id}
+        , #{item.email}
+        , #{item.code}
+    )
+    </foreach>
+    ON DUPLICATE KEY UPDATE
+        code=VALUES(code)
+</insert>
+<delete id="deleteColorList" parameterType="java.util.List">
+    DELETE FROM colors
+    WHERE
+        id IN
+        <foreach collection="color_list" item="item" separator=",">
+            #{item.id}
+        </foreach>
+        AND
+        user_email IN
+        <foreach collection="color_list" item="item" separator=",">
+            #{item.email}
+        </foreach>
+</delete>
+</mapper>

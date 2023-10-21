@@ -9,11 +9,19 @@ import org.apache.ibatis.annotations.Param;
 import com.example.spring_project.domain.entity.Event;
 
 @Mapper
-public interface EventMapper{
+public interface EventMapper {
     public boolean registerEvents(@Param("eventList") List<Event> eventList);
 
-    public List<Event> getEvents(@Param("user_email") String email,@Param("updated_at") Date updated_at);
+    public List<Event> getEvents(@Param("user_email") String email, @Param("updated_at") Date updated_at);
 
-    public Date getLatestUpdatedDate(String email); 
-    
+    public Date getLatestUpdatedDate(String email);
+
+    public void updateEvent(@Param("event") Event event);
+
+    public void updateEvents(@Param("event_list") List<Event> eventList);
+
+    public List<Event> selectByEmail(@Param("user_email") String email);
+
+    public void deleteEvents(@Param("event_list") List<Event> eventList);
+
 }

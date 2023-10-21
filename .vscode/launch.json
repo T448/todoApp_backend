@@ -15,14 +15,14 @@
             "name": "SpringProjectApplication",
             "request": "launch",
             "mainClass": "com.example.spring_project.SpringProjectApplication",
-            "projectName": "spring_project"
+            "projectName": "srv"
         },
         {
             "type": "java",
             "name": "JedisSample",
             "request": "launch",
             "mainClass": "com.example.spring_project.controller.JedisSample",
-            "projectName": "spring_project"
+            "projectName": "srv"
         }
     ]
 }

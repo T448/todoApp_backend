@@ -3,10 +3,13 @@ package com.example.spring_project.presentation.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.spring_project.presentation.HideValue;
+import com.example.spring_project.presentation.model.request.EventRequest;
 import com.example.spring_project.service.EventDto;
 import com.example.spring_project.service.EventUsecase;
 
@@ -39,5 +42,15 @@ public class EventController {
         } catch (Exception e) {
             throw new Error(e.toString());
         }
+    }
+
+    @PostMapping(value = "/api/events")
+    public String addEvents(@RequestBody EventRequest request) {
+        String email = hideValue.getHideEmailValue();
+        String accessToken = hideValue.getHideTokenValue();
+        String newEventId = eventUsecase.addEvents(request.getName(), request.getMemo(), request.getProjectId(),
+                request.getParentEventId(), request.getStartDateTime(), request.getEndDateTime(), request.getTimeZone(),
+                accessToken, email);
+        return newEventId;
     }
 }

@@ -5,6 +5,9 @@ import com.example.spring_project.domain.repository.GoogleRepository;
 import com.example.spring_project.infrastructure.googleApi.response.GoogleGetUserInfoResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class GoogleRepositoryImpl implements GoogleRepository {
 
   @Autowired
@@ -44,6 +48,7 @@ public class GoogleRepositoryImpl implements GoogleRepository {
       GoogleGetUserInfoResponse response = new GoogleGetUserInfoResponse(email, name);
       return response;
     } catch (IOException | InterruptedException e) {
+      log.error(e.toString());
       throw new Error(e.toString());
     }
   }

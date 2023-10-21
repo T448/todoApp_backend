@@ -18,22 +18,29 @@ import com.example.spring_project.domain.repository.GoogleCalendarRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
 
     @Override
-    public ArrayList<Event> GetGoogleCalendarEvents(String email, String accessToken, Date updatedMin) {
+    public ArrayList<Event> GetGoogleCalendarEvents(String email, String accessToken, Date updatedMin,
+            String calendarId) {
         ArrayList<Event> events = new ArrayList<Event>();
         String requestUrl = "https://www.googleapis.com/calendar/v3/calendars/";
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        System.out.println("GetGoogleCalendarEvents updatedMin");
+        System.out.println(updatedMin);
         try {
-            requestUrl += URLEncoder.encode(email, "UTF-8") + "/events";
+            requestUrl += URLEncoder.encode(calendarId, "UTF-8") + "/events";
             if (updatedMin != null) {
                 requestUrl += "?updatedMin=" + sf.format(updatedMin);
             }
 
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            log.error(e.toString());
         }
 
         HttpClient client = HttpClient.newHttpClient();
@@ -43,7 +50,8 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
                 .header("Authorization", "Bearer " + accessToken)
                 .GET()
                 .build();
-
+        System.out.println("GetGoogleCalendarEvents");
+        System.out.println(request);
         SimpleDateFormat start_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat end_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat created_at_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -58,75 +66,82 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
             Integer loopCount = node.size();
 
             for (int i = 0; i < loopCount; i++) {
+                log.info("eventNum".replace("Num", String.valueOf(i)));
                 JsonNode event = node.get(i);
+                // System.out.println("event");
+                // System.out.println(event);
+                log.info("eventNum".replace("Num", String.valueOf(i)));
+                if (event.has("summary")) {
+                    log.info(event.toString());
+                    String id = event.get("id").toString();
+                    String created_at = event.get("created").toString();
+                    String updated_at = event.get("updated").toString();
+                    String title = event.get("summary").toString();
+                    String start;
+                    String end;
+                    Integer endDelta = 0;
 
-                String id = event.get("id").toString();
-                String created_at = event.get("created").toString();
-                String updated_at = event.get("updated").toString();
-                String title = event.get("summary").toString();
-                String start;
-                String end;
-                Integer endDelta = 0;
+                    try {
+                        start = event.get("start").get("dateTime").toString();
+                    } catch (Exception e) {
+                        start = event.get("start").get("date").toString();
+                        start += "T00:00:00";
+                    }
 
-                try {
-                    start = event.get("start").get("dateTime").toString();
-                } catch (Exception e) {
-                    start = event.get("start").get("date").toString();
-                    start += "T00:00:00";
+                    try {
+                        end = event.get("end").get("dateTime").toString();
+                    } catch (Exception e) {
+                        end = event.get("end").get("date").toString().replaceAll("\"", "");
+                        end += "T23:59:59";
+                        // 翌日の23:59:59になってしまうため、後で引く。
+                        endDelta = 1;
+                    }
+                    id = id.replaceAll("\"", "");
+                    email = email.replaceAll("\"", "");
+                    title = title.replaceAll("\"", "");
+                    start = start.replaceAll("\"", "");
+                    start = start.replaceAll("T", " ");
+                    start = start.replaceAll("\\+09:00", "");
+
+                    end = end.replaceAll("\"", "");
+                    end = end.replaceAll("T", " ");
+                    end = end.replaceAll("\\+09:00", "");
+
+                    created_at = created_at.replaceAll("\"", "");
+                    created_at = created_at.replaceAll("T", " ");
+                    created_at = created_at.replaceAll("Z", "");
+
+                    updated_at = updated_at.replaceAll("\"", "");
+                    updated_at = updated_at.replaceAll("T", " ");
+                    updated_at = updated_at.replaceAll("Z", "");
+
+                    String shortTitle = title;
+                    if (shortTitle.length() > 10) {
+                        shortTitle = shortTitle.substring(0, 10) + "...";
+                    }
+
+                    Date start_Date = start_dateFormat.parse(start);
+                    Date end_Date = end_dateFormat.parse(end);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(end_Date);
+                    calendar.add(Calendar.DATE, -endDelta);
+                    end_Date = calendar.getTime();
+                    Date created_at_Date = created_at_dateFormat.parse(created_at);
+                    Date updated_at_Date = updated_at_dateFormat.parse(updated_at);
+
+                    String projectId = calendarId;
+                    String parentEventId = "";
+                    String memo = "";
+
+                    Event eventObj = new Event(id, email, title, shortTitle, projectId, parentEventId, memo, start_Date,
+                            end_Date, created_at_Date, updated_at_Date);
+                    events.add(eventObj);
                 }
-
-                try {
-                    end = event.get("end").get("dateTime").toString();
-                } catch (Exception e) {
-                    end = event.get("end").get("date").toString().replaceAll("\"", "");
-                    end += "T23:59:59";
-                    // 翌日の23:59:59になってしまうため、後で引く。
-                    endDelta = 1;
-                }
-                id = id.replaceAll("\"", "");
-                email = email.replaceAll("\"", "");
-                title = title.replaceAll("\"", "");
-                start = start.replaceAll("\"", "");
-                start = start.replaceAll("T", " ");
-                start = start.replaceAll("\\+09:00", "");
-
-                end = end.replaceAll("\"", "");
-                end = end.replaceAll("T", " ");
-                end = end.replaceAll("\\+09:00", "");
-
-                created_at = created_at.replaceAll("\"", "");
-                created_at = created_at.replaceAll("T", " ");
-                created_at = created_at.replaceAll("Z", "");
-
-                updated_at = updated_at.replaceAll("\"", "");
-                updated_at = updated_at.replaceAll("T", " ");
-                updated_at = updated_at.replaceAll("Z", "");
-
-                String shortTitle = title;
-                if (shortTitle.length() > 10) {
-                    shortTitle = shortTitle.substring(0, 10) + "...";
-                }
-
-                Date start_Date = start_dateFormat.parse(start);
-                Date end_Date = end_dateFormat.parse(end);
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(end_Date);
-                calendar.add(Calendar.DATE, -endDelta);
-                end_Date = calendar.getTime();
-                Date created_at_Date = created_at_dateFormat.parse(created_at);
-                Date updated_at_Date = updated_at_dateFormat.parse(updated_at);
-
-                String projectId = "";
-                String parentEventId = "";
-                String memo = "";
-
-                Event eventObj = new Event(id, email, title, shortTitle, projectId, parentEventId, memo, start_Date,
-                        end_Date, created_at_Date, updated_at_Date);
-                events.add(eventObj);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            log.error(e.toString());
         }
         return events;
     }

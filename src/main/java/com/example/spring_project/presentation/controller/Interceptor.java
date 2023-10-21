@@ -42,6 +42,9 @@ public class Interceptor implements HandlerInterceptor {
         System.out.println(sessionID);
         System.out.println(requestURL);
         System.out.println(loginURL);
+        if (sessionID == null) {
+            sessionID = "";
+        }
         if (requestURL.equals("http://localhost:8080/api/redis-flush")) {
             // redisのデータを全消去したいとき用
             // 以降のセッション系の処理とは無関係のためそのままreturn

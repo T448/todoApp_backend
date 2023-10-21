@@ -11,4 +11,12 @@ public interface EventRepository {
     public List<Event> GetEvents(String email, Date updated_at);
 
     public Date GetLatestUpdatedDate(String email);
+
+    public void UpdateEvent(Event event);
+
+    public void UpdateEvents(List<Event> event);
+
+    public List<Event> selectByEmail(String email);
+
+    public void deleteEvents(List<Event> eventList);
 }

@@ -8,6 +8,9 @@ import com.example.spring_project.infrastructure.googleApi.response.GoogleOauthR
 import com.example.spring_project.infrastructure.googleApi.response.GoogleOauthResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -18,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class GoogleOauthRepositoryImpl implements GoogleOauthRepository {
 
   @Autowired
@@ -79,6 +83,7 @@ public class GoogleOauthRepositoryImpl implements GoogleOauthRepository {
       );
       return googleOauthResponse;
     } catch (Exception error) {
+      log.error(error.toString());
       throw new IllegalArgumentException(error.toString());
     }
   }
@@ -127,6 +132,7 @@ public class GoogleOauthRepositoryImpl implements GoogleOauthRepository {
       // このメソッド内でどこまでやるか。
       return googleOauthRefreshResponse;
     } catch (Exception error) {
+      log.error(error.toString());
       throw new IllegalArgumentException(error.toString());
     }
   }

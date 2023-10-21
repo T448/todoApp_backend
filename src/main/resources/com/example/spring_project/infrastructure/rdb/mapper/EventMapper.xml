@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.spring_project.infrastructure.rdb.mapper.EventMapper">
+<insert id="registerEvents" parameterType="java.util.List">
+    INSERT IGNORE INTO events
+    (     
+        id,
+        user_email,
+        title,
+        short_title,
+        project_id,
+        parent_event_id,
+        memo,
+        start,
+        end,
+        created_at,
+        updated_at
+    ) 
+    VALUES 
+    <foreach collection="eventList" item="item" separator=",">
+    (
+        #{item.id},
+        #{item.email},
+        #{item.title},
+        #{item.short_title},
+        #{item.project_id},
+        #{item.parent_event_id},
+        #{item.memo},
+        #{item.start},
+        #{item.end},
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    )
+    </foreach>
+</insert>
+<select id="getEvents">
+SELECT
+    id,
+    user_email,
+    title,
+    short_title,
+    project_id,
+    parent_event_id,
+    memo,
+    start,
+    end,
+    created_at,
+    updated_at
+FROM 
+    events
+WHERE
+    user_email = #{user_email}
+    AND
+    updated_at <![CDATA[>=]]> #{updated_at};
+</select>
+<select id="getLatestUpdatedDate">
+    SELECT
+        updated_at
+    FROM
+        events
+    WHERE
+        user_email = #{user_email}
+    ORDER BY
+        updated_at DESC
+    LIMIT
+        1
+</select>
+<update id="updateEvent" parameterType="com.example.spring_project.domain.entity.Event">
+    UPDATE
+        events
+    SET
+        user_email = #{event.email}
+        , title = #{event.title}
+        , short_title = #{event.short_title}
+        , project_id = #{event.project_id}
+        , parent_event_id = #{event.parent_event_id}
+        , memo = #{event.memo}
+        , start = #{event.start}
+        , end = #{event.end}
+        , updated_at = CURRENT_TIMESTAMP
+    WHERE
+        id = #{event.id}
+</update>
+<update id="updateEvents">
+    UPDATE
+        events
+    SET
+        user_email = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.email}
+        </foreach>
+        ),
+        title = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.title}
+        </foreach>
+        ),
+        short_title = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.short_title}
+        </foreach>
+        ),
+        project_id = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.project_id}
+        </foreach>
+        ),
+        parent_event_id = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.parent_event_id}
+        </foreach>
+        ),
+        memo = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.memo}
+        </foreach>
+        ),
+        start = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.start}
+        </foreach>
+        ),
+        end = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.end}
+        </foreach>
+        ),
+        updated_at = CURRENT_TIMESTAMP
+    WHERE
+        id IN
+        (
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+
+        )
+</update>
+<select id="selectByEmail">
+    SELECT
+        id,
+        user_email,
+        title,
+        short_title,
+        project_id,
+        parent_event_id,
+        memo,
+        start,
+        end,
+        created_at,
+        updated_at
+    FROM 
+        events
+    WHERE
+        user_email = #{user_email}
+</select>
+<delete id="deleteEvents">
+    DELETE FROM events
+        WHERE id IN
+        (
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        )
+</delete>
+</mapper>
