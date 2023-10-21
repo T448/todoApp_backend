@@ -64,6 +64,7 @@ public class EventController {
         String accessToken = hideValue.getHideTokenValue();
         return eventUsecase.updateEvent(request.getEventId(), request.getName(), request.getMemo(),
                 request.getProjectId(),
+                request.getParentEventId(),
                 request.getStartDateTime(), request.getEndDateTime(), request.getTimeZone(), accessToken, email);
     }
 }

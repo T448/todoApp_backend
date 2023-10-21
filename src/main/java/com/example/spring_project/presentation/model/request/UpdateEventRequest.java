@@ -12,6 +12,7 @@ public class UpdateEventRequest {
     private String name;
     private String memo;
     private String projectId;
+    private String parentEventId;
     private String startDateTime;
     private String endDateTime;
     private String timeZone;
