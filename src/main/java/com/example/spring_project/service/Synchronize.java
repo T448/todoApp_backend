@@ -52,29 +52,27 @@ public class Synchronize {
      * @param email
      * @param accessToken
      */
-    public void synchronize(String email, String accessToken) {
+    public void synchronize(String email, String accessToken, boolean colors, boolean projects, boolean events) {
         log.info("---------------Synchronize---------------");
-        List<Color> colorListDB = colorRepository.selectByEmail(email);
-        List<Project> projectListDB = projectRepository.selectByEmail(email);
-        List<Event> eventListDB = eventRepository.selectByEmail(email);
-
-        List<Color> colorListGC = googleCalendarColorsRepository.getGoogleCalendarColors(email, accessToken);
         List<Project> projectListGC = googleCalendarCalendarRepository.getCalendarList(accessToken, email);
         List<String> projectIdListGC = projectListGC.stream().map(item -> item.getId()).toList();
+        if (colors) {
+            synchronizeColors(email, accessToken);
+        }
+        if (projects) {
+            synchronizeProjects(email, accessToken, projectListGC);
+        }
+        if (events) {
+            synchronizeEvents(email, accessToken, projectIdListGC);
+        }
 
-        ArrayList<List<Event>> eventListListGC = new ArrayList<>();
-        projectIdListGC.forEach(item -> {
-            eventListListGC.add(googleCalendarRepository.GetGoogleCalendarEvents(email,
-                    accessToken, null, item));
-        });
-        log.info("eventListListGC");
-        log.info(eventListListGC.toString());
-        List<Event> eventListGC = eventListListGC.stream().flatMap(list -> list.stream()).toList();
+    }
 
+    private void synchronizeColors(String email, String accessToken) {
+        List<Color> colorListDB = colorRepository.selectByEmail(email);
+        List<Color> colorListGC = googleCalendarColorsRepository.getGoogleCalendarColors(email, accessToken);
         var divideColorsResultMap = divideColors(colorListDB, colorListGC, email);
-        var divideProjectsResultMap = divideProjects(projectListDB, projectListGC, email);
-        var divideEventsResultMap = divideEvents(eventListDB, eventListGC, email);
-        // color
+
         log.info(divideColorsResultMap.toString());
         var newColorListDB = divideColorsResultMap.get("newColorListDB");
         var updateColorListDB = divideColorsResultMap.get("updateColorListDB");
@@ -89,8 +87,13 @@ public class Synchronize {
         if (!deleteColorListDB.isEmpty()) {
             colorRepository.deleteColorList(deleteColorListDB);
         }
+    }
 
-        // project
+    private void synchronizeProjects(String email, String accessToken,
+            List<Project> projectListGC) {
+        List<Project> projectListDB = projectRepository.selectByEmail(email);
+        var divideProjectsResultMap = divideProjects(projectListDB, projectListGC, email);
+
         log.info(divideProjectsResultMap.toString());
         var newProjectListDB = divideProjectsResultMap.get("newProjectListDB");
         var updateProjectListDB = divideProjectsResultMap.get("updateProjectListDB");
@@ -107,8 +110,22 @@ public class Synchronize {
         if (!deleteProjectListDB.isEmpty()) {
             projectRepository.deleteProjects(deleteProjectListDB);
         }
+    }
 
-        // event
+    private void synchronizeEvents(String email, String accessToken, List<String> projectIdListGC) {
+        List<Event> eventListDB = eventRepository.selectByEmail(email);
+
+        ArrayList<List<Event>> eventListListGC = new ArrayList<>();
+        projectIdListGC.forEach(item -> {
+            eventListListGC.add(googleCalendarRepository.GetGoogleCalendarEvents(email,
+                    accessToken, null, item));
+        });
+        log.info("eventListListGC");
+        log.info(eventListListGC.toString());
+        List<Event> eventListGC = eventListListGC.stream().flatMap(list -> list.stream()).toList();
+
+        var divideEventsResultMap = divideEvents(eventListDB, eventListGC, email);
+
         log.info(divideEventsResultMap.toString());
         var newEventListDB = divideEventsResultMap.get("newEventListDB");
         var updateEventListDB = divideEventsResultMap.get("updateEventListDB");
@@ -125,7 +142,6 @@ public class Synchronize {
         if (!deleteEventListDB.isEmpty()) {
             eventRepository.deleteEvents(deleteEventListDB);
         }
-
     }
 
     private Map<String, List<Color>> divideColors(List<Color> colorListDB, List<Color> colorListGC, String email) {
