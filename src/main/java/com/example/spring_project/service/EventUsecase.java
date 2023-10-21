@@ -19,7 +19,10 @@ import com.example.spring_project.domain.repository.GoogleCalendarEventRepositor
 import com.example.spring_project.domain.repository.GoogleCalendarRepository;
 import com.example.spring_project.domain.repository.ProjectRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class EventUsecase {
 
     @Autowired
@@ -137,5 +140,35 @@ public class EventUsecase {
                                     null, null)));
         }
         return newEventId;
+    }
+
+    /**
+     * 
+     * @param eventId
+     * @param name
+     * @param memo
+     * @param projectId
+     * @param startDateTime
+     * @param endDateTime
+     * @param timeZone
+     * @param accessToken
+     * @param email
+     * @return
+     */
+    public String updateEvent(
+            String eventId,
+            String name,
+            String memo,
+            String projectId,
+            String startDateTime,
+            String endDateTime,
+            String timeZone,
+            String accessToken,
+            String email) {
+        log.info("[EventUsecase] update event");
+
+        String updateResponseOnGoogleCalendar = googleCalendarEventRepository.updateEvent(
+                eventId, name, memo, startDateTime, endDateTime, timeZone, projectId, accessToken);
+        return updateResponseOnGoogleCalendar;
     }
 }
