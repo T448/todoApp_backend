@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -131,6 +132,43 @@ public class GoogleCalendarEventRepositoryImpl implements GoogleCalendarEventRep
         } else {
             log.error("calendarIDが不適切");
             throw new IllegalArgumentException("calendarIDが不適切");
+        }
+    }
+
+    @Override
+    public String deleteEvents(String calendarId, String eventId, String accessToken) {
+        String requestUrl = "";
+        try {
+            requestUrl = "https://www.googleapis.com/calendar/v3/calendars/"
+                    + URLEncoder.encode(calendarId, "UTF-8")
+                    + "/events/"
+                    + URLEncoder.encode(eventId, "UTF-8");
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest
+                .newBuilder()
+                .uri(URI.create(requestUrl))
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Content-Type", "application/json")
+                .header("charset", "UTF-8")
+                .DELETE()
+                .build();
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            log.info(response.toString());
+            ObjectMapper responseObjectMapper = new ObjectMapper();
+            JsonNode responseNode = responseObjectMapper.readTree(response.body());
+            log.info(responseNode.toString());
+            // if (responseNode.has("id")) {
+            // return responseNode.get("id").toString().replaceAll("\"", "");
+            // } else {
+            // return "[error]" + responseNode.get("error").get("message").toString();
+            // }
+            return responseNode.toString();
+        } catch (Exception e) {
+            throw new Error(e.toString());
         }
     }
 }

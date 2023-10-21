@@ -2,6 +2,7 @@ package com.example.spring_project.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -194,5 +195,14 @@ public class EventUsecase {
             eventRepository.UpdateEvent(updatedEvent);
         }
         return updateResponseFromGoogleCalendar;
+    }
+
+    public String deleteEvents(List<String> eventIdList, String email, String projectId, String accessToken) {
+        List<String> resultList = new ArrayList<String>();
+        eventIdList.forEach(eventId -> {
+            String result = googleCalendarEventRepository.deleteEvents(projectId, eventId, accessToken);
+            resultList.add(result);
+        });
+        return resultList.toString();
     }
 }

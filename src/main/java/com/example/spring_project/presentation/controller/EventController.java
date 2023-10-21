@@ -2,6 +2,7 @@ package com.example.spring_project.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.spring_project.presentation.HideValue;
+import com.example.spring_project.presentation.model.request.DeleteEventsRequest;
 import com.example.spring_project.presentation.model.request.EventRequest;
 import com.example.spring_project.presentation.model.request.UpdateEventRequest;
 import com.example.spring_project.service.EventDto;
@@ -65,5 +67,14 @@ public class EventController {
         return eventUsecase.updateEvent(request.getEventId(), request.getName(), request.getMemo(),
                 request.getProjectId(),
                 request.getStartDateTime(), request.getEndDateTime(), request.getTimeZone(), accessToken, email);
+    }
+
+    @DeleteMapping(value = "api/events")
+    public String deleteEvents(@RequestBody DeleteEventsRequest request) {
+        String email = hideValue.getHideEmailValue();
+        String accessToken = hideValue.getHideTokenValue();
+        String deleteEventsResponse = eventUsecase.deleteEvents(request.getEventIdList(), email, request.getProjectId(),
+                accessToken);
+        return deleteEventsResponse;
     }
 }
