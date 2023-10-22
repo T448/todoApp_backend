@@ -179,8 +179,8 @@ WHERE
     DELETE FROM events
         WHERE id IN
         (
-            <foreach collection="event_list" item="item" separator=",">
-                #{item.id}
+            <foreach collection="event_id_list" item="item" separator=",">
+                #{item}
             </foreach>
         )
 </delete>

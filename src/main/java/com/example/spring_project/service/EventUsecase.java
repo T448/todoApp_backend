@@ -198,11 +198,14 @@ public class EventUsecase {
     }
 
     public String deleteEvents(List<String> eventIdList, String email, String projectId, String accessToken) {
-        List<String> resultList = new ArrayList<String>();
+        List<String> deletedEventIdListOnGC = new ArrayList<String>();
         eventIdList.forEach(eventId -> {
             String result = googleCalendarEventRepository.deleteEvents(projectId, eventId, accessToken);
-            resultList.add(result);
+            if (result.isBlank()) {
+                deletedEventIdListOnGC.add(eventId);
+            }
         });
-        return resultList.toString();
+        eventRepository.deleteEvents(deletedEventIdListOnGC);
+        return deletedEventIdListOnGC.toString();
     }
 }

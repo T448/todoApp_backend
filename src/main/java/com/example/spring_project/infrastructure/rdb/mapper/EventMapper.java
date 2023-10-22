@@ -22,6 +22,6 @@ public interface EventMapper {
 
     public List<Event> selectByEmail(@Param("user_email") String email);
 
-    public void deleteEvents(@Param("event_list") List<Event> eventList);
+    public void deleteEvents(@Param("event_id_list") List<String> eventIdList);
 
 }
