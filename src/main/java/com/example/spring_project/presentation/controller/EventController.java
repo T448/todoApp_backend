@@ -2,6 +2,7 @@ package com.example.spring_project.presentation.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import com.example.spring_project.presentation.model.request.EventRequest;
 import com.example.spring_project.presentation.model.request.UpdateEventRequest;
 import com.example.spring_project.service.EventDto;
 import com.example.spring_project.service.EventUsecase;
+import com.example.spring_project.service.Synchronize;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @Slf4j
 public class EventController {
-
+    @Autowired
+    Synchronize suSynchronize;
     private final HideValue hideValue;
     private EventUsecase eventUsecase;
 
@@ -76,5 +79,13 @@ public class EventController {
         String deleteEventsResponse = eventUsecase.deleteEvents(request.getEventIdList(), email, request.getProjectId(),
                 accessToken);
         return deleteEventsResponse;
+    }
+
+    @GetMapping(value = "api/synchronize")
+    public String synchronize() {
+        String email = hideValue.getHideEmailValue();
+        String accessToken = hideValue.getHideTokenValue();
+        suSynchronize.synchronize(email, accessToken, true, true, true);
+        return "";
     }
 }
