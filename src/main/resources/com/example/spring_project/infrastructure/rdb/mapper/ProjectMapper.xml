@@ -144,11 +144,13 @@
     )
     </foreach>
 </insert>
-<delete id="deleteEvents">
-    DELETE FROM events
+<delete id="deleteProjects">
+    DELETE FROM projects
     WHERE id IN
-    <foreach collection="project_list" item="item" separator=",">
-        #{item.id}
-    </foreach>
+    (
+        <foreach collection="project_list" item="item" separator=",">
+            #{item.id}
+        </foreach>
+    )
 </delete>
 </mapper>
