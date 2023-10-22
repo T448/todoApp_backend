@@ -64,7 +64,7 @@ public class EventRepositoryDB implements EventRepository {
     }
 
     @Override
-    public void deleteEvents(List<Event> eventList) {
-        eventMapper.deleteEvents(eventList);
+    public void deleteEvents(List<String> eventIdList) {
+        eventMapper.deleteEvents(eventIdList);
     }
 }

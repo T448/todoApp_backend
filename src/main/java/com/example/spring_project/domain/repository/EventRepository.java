@@ -18,5 +18,5 @@ public interface EventRepository {
 
     public List<Event> selectByEmail(String email);
 
-    public void deleteEvents(List<Event> eventList);
+    public void deleteEvents(List<String> eventIdList);
 }

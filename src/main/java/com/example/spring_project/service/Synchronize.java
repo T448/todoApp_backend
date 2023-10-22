@@ -140,7 +140,11 @@ public class Synchronize {
         }
 
         if (!deleteEventListDB.isEmpty()) {
-            eventRepository.deleteEvents(deleteEventListDB);
+            eventRepository.deleteEvents(
+                    deleteEventListDB
+                            .stream()
+                            .map(item -> item.getId())
+                            .toList());
         }
     }
 

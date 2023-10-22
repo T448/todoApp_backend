@@ -2,6 +2,7 @@ package com.example.spring_project.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,10 @@ import com.example.spring_project.domain.repository.GoogleCalendarEventRepositor
 import com.example.spring_project.domain.repository.GoogleCalendarRepository;
 import com.example.spring_project.domain.repository.ProjectRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class EventUsecase {
 
     @Autowired
@@ -45,10 +49,12 @@ public class EventUsecase {
             Number registerResult = -1;
             if (!eventList.isEmpty()) {
                 Project generalProject = projectRepository.selectByNameAndEmail("General", email);
-                String generalProjectId = generalProject.getId();
-                eventList.stream()
-                        .forEach(item -> item.setProjectId(generalProjectId));
-                registerResult = eventRepository.RegisterEvents(eventList);
+                if (generalProject != null) {
+                    String generalProjectId = generalProject.getId();
+                    eventList.stream()
+                            .forEach(item -> item.setProjectId(generalProjectId));
+                    registerResult = eventRepository.RegisterEvents(eventList);
+                }
             }
             System.out.println("---------------DBに新たに登録された件数---------------");
             System.out.println(registerResult);
@@ -137,5 +143,69 @@ public class EventUsecase {
                                     null, null)));
         }
         return newEventId;
+    }
+
+    /**
+     * 
+     * @param eventId
+     * @param name
+     * @param memo
+     * @param projectId
+     * @param parentEventId
+     * @param startDateTimeStr
+     * @param endDateTime
+     * @param timeZone
+     * @param accessToken
+     * @param email
+     * @return
+     */
+    public String updateEvent(
+            String eventId,
+            String name,
+            String memo,
+            String projectId,
+            String startDateTimeStr,
+            String endDateTimeStr,
+            String timeZone,
+            String accessToken,
+            String email) {
+        log.info("[EventUsecase] update event");
+
+        String updateResponseFromGoogleCalendar = googleCalendarEventRepository.updateEvent(
+                eventId, name, memo, startDateTimeStr, endDateTimeStr, timeZone, projectId, accessToken);
+
+        if (updateResponseFromGoogleCalendar.equals(eventId)) {
+            SimpleDateFormat sdfStart = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            Date startDateTime = null;
+            try {
+                startDateTime = sdfStart.parse(startDateTimeStr);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            SimpleDateFormat sdfEnd = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            Date endDateTime = null;
+            try {
+                endDateTime = sdfEnd.parse(endDateTimeStr);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            Event updatedEvent = new Event(
+                    eventId, email, name, name, projectId, null, memo, startDateTime, endDateTime, null, null);
+            eventRepository.UpdateEvent(updatedEvent);
+        }
+        return updateResponseFromGoogleCalendar;
+    }
+
+    public String deleteEvents(List<String> eventIdList, String email, String projectId, String accessToken) {
+        List<String> deletedEventIdListOnGC = new ArrayList<String>();
+        eventIdList.forEach(eventId -> {
+            String result = googleCalendarEventRepository.deleteEvents(projectId, eventId, accessToken);
+            if (result.isBlank()) {
+                deletedEventIdListOnGC.add(eventId);
+            }
+        });
+        eventRepository.deleteEvents(deletedEventIdListOnGC);
+        return deletedEventIdListOnGC.toString();
     }
 }
