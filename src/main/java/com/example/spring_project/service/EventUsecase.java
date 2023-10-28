@@ -42,22 +42,6 @@ public class EventUsecase {
         System.out.println("---------------最終更新---------------");
         System.out.println(latestUpdatedDate);
         try {
-            List<Event> eventList = googleCalendarRepository.GetGoogleCalendarEvents(email, accessToken,
-                    latestUpdatedDate, email);
-            System.out.println("---------------eventList---------------");
-            // System.out.println(eventList);
-            Number registerResult = -1;
-            if (!eventList.isEmpty()) {
-                Project generalProject = projectRepository.selectByNameAndEmail("General", email);
-                if (generalProject != null) {
-                    String generalProjectId = generalProject.getId();
-                    eventList.stream()
-                            .forEach(item -> item.setProjectId(generalProjectId));
-                    registerResult = eventRepository.RegisterEvents(eventList);
-                }
-            }
-            System.out.println("---------------DBに新たに登録された件数---------------");
-            System.out.println(registerResult);
             if (all) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 latestUpdatedDate = sdf.parse("1970-01-01 00:00:00");

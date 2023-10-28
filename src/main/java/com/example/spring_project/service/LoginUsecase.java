@@ -61,8 +61,6 @@ public class LoginUsecase {
   @Autowired
   private ProjectMapper projectMapper;
 
-  private static final String GENERAL = "General";
-
   public String login(String authCode)
       throws UnsupportedEncodingException {
     System.out.println("login");
@@ -110,7 +108,8 @@ public class LoginUsecase {
       try {
         if (!mainCalendar.getId().equals("")) {
           log.info("insert project");
-          projectMapper.insertProject(mainCalendar.getId(), GENERAL, mainCalendar.getColor_id(), mainCalendar.getMemo(),
+          projectMapper.insertProject(mainCalendar.getId(), mainCalendar.getName(), mainCalendar.getColor_id(),
+              mainCalendar.getMemo(),
               email);
         }
       } catch (Exception error) {
