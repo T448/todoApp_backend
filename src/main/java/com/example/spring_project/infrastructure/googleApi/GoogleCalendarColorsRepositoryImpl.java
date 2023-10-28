@@ -47,7 +47,6 @@ public class GoogleCalendarColorsRepositoryImpl implements GoogleCalendarColorsR
 
             return colorList;
         } catch (Exception error) {
-            // System.out.println(error.toString());
             log.error(error.toString());
             throw new IllegalArgumentException(error);
         }

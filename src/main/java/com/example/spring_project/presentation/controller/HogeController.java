@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.spring_project.presentation.HideValue;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -13,15 +14,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class HogeController {
-      private final HideValue hideValue; 
+    private final HideValue hideValue;
+
     // 共通処理等の動作確認用のAPI
     @PostMapping(value = "/api/hoge")
     public String hoge(@RequestBody Map<String, Object> requestBody) {
-        System.out.println("hoge");
-        System.out.println(requestBody.get("auth"));
-        System.out.println("----------------インターセプターで取得したトークン(hoge controller)------------------");
-        System.out.println(hideValue.getHideTokenValue());
+        log.info("hoge");
+        log.info(requestBody.get("auth").toString());
+        log.info("----------------インターセプターで取得したトークン(hoge controller)------------------");
+        log.info(hideValue.getHideTokenValue());
         return "hoge";
     }
 }

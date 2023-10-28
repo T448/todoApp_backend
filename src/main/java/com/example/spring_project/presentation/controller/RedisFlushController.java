@@ -6,7 +6,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.spring_project.infrastructure.redis.methods.RedisMethods;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
+@Slf4j
 public class RedisFlushController {
 
     @Autowired
@@ -14,8 +17,8 @@ public class RedisFlushController {
 
     @PostMapping(value = "/api/redis-flush")
     public String redisFlush(String inputValue) {
-        System.out.println("redisFlush");
-        
+        log.info("redisFlush");
+
         return redisMethods.DeleteAllData();
     }
 }

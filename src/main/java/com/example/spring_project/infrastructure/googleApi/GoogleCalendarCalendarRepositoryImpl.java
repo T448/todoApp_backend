@@ -7,7 +7,6 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.checkerframework.common.value.qual.ArrayLen;
 import org.springframework.stereotype.Service;
 
 import com.example.spring_project.domain.entity.Project;

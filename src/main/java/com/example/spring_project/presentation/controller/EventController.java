@@ -36,9 +36,9 @@ public class EventController {
         try {
             String accessToken = hideValue.getHideTokenValue();
             String email = hideValue.getHideEmailValue();
-            System.out.println("---------------[event controller] getEvents---------------");
-            System.out.println(all);
-            System.out.println(email);
+            log.info("---------------[event controller] getEvents---------------");
+            log.info(String.valueOf(all));
+            log.info(email.toString());
             if (all == null) {
                 all = false;
             }

@@ -22,7 +22,7 @@ public class LoginController {
   public LoginResponse login(
       @RequestHeader(required = false) Map<String, Object> requestHeader) {
     try {
-      System.out.println("-----[login controller]-----");
+      log.info("-----[login controller]-----");
       String sessionId = loginUsecase.login(
           requestHeader.get("authorization").toString());
       LoginResponse response = new LoginResponse(sessionId);

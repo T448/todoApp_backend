@@ -20,8 +20,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
+@Slf4j
 public class Interceptor implements HandlerInterceptor {
     @Autowired
     SessionRepository sessionRepository;
@@ -38,10 +40,10 @@ public class Interceptor implements HandlerInterceptor {
         String sessionID = request.getHeader("sessionID");
         String requestURL = request.getRequestURL().toString();
         String loginURL = applicationProperty.get("spring.login_url");
-        System.out.println("Interceptor");
-        System.out.println(sessionID);
-        System.out.println(requestURL);
-        System.out.println(loginURL);
+        log.info("Interceptor");
+        log.info(sessionID);
+        log.info(requestURL);
+        log.info(loginURL);
         if (sessionID == null) {
             sessionID = "";
         }
@@ -56,8 +58,8 @@ public class Interceptor implements HandlerInterceptor {
             return true;
         }
         String checkSessionResultJsonString = sessionRepository.CheckSession(sessionID);
-        System.out.println("checkSessionResultJsonString");
-        System.out.println(checkSessionResultJsonString);
+        log.info("checkSessionResultJsonString");
+        log.info(checkSessionResultJsonString);
         if (checkSessionResultJsonString == null) {
             response.sendError(401, "sessionIDが不正です。");
             return false;
@@ -74,7 +76,7 @@ public class Interceptor implements HandlerInterceptor {
             hideValue.setHideEmailValue(checkSessionResult.getEmail());
             return true;
         } else {
-            System.out.println("refresh access token");
+            log.info("refresh access token");
             try {
                 var refreshResult = googleOauthRepositoryImpl.RefreshAccessToken(
                         new User(checkSessionResult.getEmail(), checkSessionResult.getName()), sessionID,

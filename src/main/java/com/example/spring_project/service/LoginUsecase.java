@@ -12,7 +12,6 @@ import com.example.spring_project.domain.repository.GoogleCalendarColorsReposito
 import com.example.spring_project.domain.repository.GoogleCalendarGetCalendarListRepository;
 import com.example.spring_project.domain.repository.GoogleOauthRepository;
 import com.example.spring_project.domain.repository.GoogleRepository;
-import com.example.spring_project.domain.repository.ProjectRepository;
 import com.example.spring_project.domain.repository.SessionRepository;
 import com.example.spring_project.domain.repository.UserRepository;
 
@@ -63,7 +62,7 @@ public class LoginUsecase {
 
   public String login(String authCode)
       throws UnsupportedEncodingException {
-    System.out.println("login");
+    log.info("login");
     // アクセストークン、リフレッシュトークン、有効期限を取得する
     GoogleOauthResponse googleOauthResponse = googleOauthRepository.GetAccessToken(authCode);
     String accessToken = googleOauthResponse.getAccessToken();
