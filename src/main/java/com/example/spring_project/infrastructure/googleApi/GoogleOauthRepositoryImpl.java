@@ -29,7 +29,7 @@ public class GoogleOauthRepositoryImpl implements GoogleOauthRepository {
 
   @Override
   public GoogleOauthResponse GetAccessToken(String authCode) throws UnsupportedEncodingException {
-    
+
     String requestUrl = applicationProperty.get("spring.oauth2_request_url");
     String clientId = applicationProperty.get("spring.client_id");
     String clientSecret = applicationProperty.get("spring.client_secret");
@@ -45,26 +45,25 @@ public class GoogleOauthRepositoryImpl implements GoogleOauthRepository {
 
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest request = HttpRequest
-      .newBuilder()
-      .uri(URI.create(requestUrl))
-      .header("Content-Type", "application/x-www-form-urlencoded")
-      .header("charset", "UTF-8")
-      .POST(HttpRequest.BodyPublishers.ofString(content))
-      .build();
+        .newBuilder()
+        .uri(URI.create(requestUrl))
+        .header("Content-Type", "application/x-www-form-urlencoded")
+        .header("charset", "UTF-8")
+        .POST(HttpRequest.BodyPublishers.ofString(content))
+        .build();
 
     try {
       HttpResponse<String> responseFromGoogle = client.send(
-        request,
-        HttpResponse.BodyHandlers.ofString()
-      );
+          request,
+          HttpResponse.BodyHandlers.ofString());
       String refresh_token;
       ObjectMapper mapper = new ObjectMapper();
       JsonNode node = mapper.readTree(responseFromGoogle.body());
-      System.out.println("---------------node---------------");
-      System.out.println(node);
+      log.info("---------------node---------------");
+      log.info(node.toString());
 
       String access_token = node.get("access_token").toString();
-      if (node.has("refresh_token")){
+      if (node.has("refresh_token")) {
         refresh_token = node.get("refresh_token").toString();
       } else {
         // NOTE : [230917]おそらくこのパターンは存在しない。
@@ -76,11 +75,10 @@ public class GoogleOauthRepositoryImpl implements GoogleOauthRepository {
       String id_token = node.get("id_token").toString();
 
       GoogleOauthResponse googleOauthResponse = new GoogleOauthResponse(
-        access_token,
-        refresh_token,
-        id_token,
-        expires_in        
-      );
+          access_token,
+          refresh_token,
+          id_token,
+          expires_in);
       return googleOauthResponse;
     } catch (Exception error) {
       log.error(error.toString());
@@ -90,10 +88,9 @@ public class GoogleOauthRepositoryImpl implements GoogleOauthRepository {
 
   @Override
   public GoogleOauthRefreshResponse RefreshAccessToken(
-    User user,
-    String sessionId,
-    String refreshToken
-  ) throws UnsupportedEncodingException {
+      User user,
+      String sessionId,
+      String refreshToken) throws UnsupportedEncodingException {
     String requestUrl = applicationProperty.get("spring.oauth2_request_url");
     String clientSecret = applicationProperty.get("spring.client_secret");
     String clientId = applicationProperty.get("spring.client_id");
@@ -106,27 +103,25 @@ public class GoogleOauthRepositoryImpl implements GoogleOauthRepository {
 
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest requestNewAccessToken = HttpRequest
-      .newBuilder()
-      .uri(URI.create(requestUrl))
-      .header("Content-Type", "application/x-www-form-urlencoded")
-      .header("charset", "UTF-8")
-      .POST(HttpRequest.BodyPublishers.ofString(content))
-      .build();
+        .newBuilder()
+        .uri(URI.create(requestUrl))
+        .header("Content-Type", "application/x-www-form-urlencoded")
+        .header("charset", "UTF-8")
+        .POST(HttpRequest.BodyPublishers.ofString(content))
+        .build();
 
     try {
       HttpResponse<String> responseNewAccessToken = client.send(
-        requestNewAccessToken,
-        HttpResponse.BodyHandlers.ofString()
-      );
+          requestNewAccessToken,
+          HttpResponse.BodyHandlers.ofString());
       ObjectMapper mapper = new ObjectMapper();
       JsonNode node = mapper.readTree(responseNewAccessToken.body());
       String updatedAccessToken = node.get("access_token").toString();
       String expiresIn = node.get("expires_in").toString();
       String updatedExpires = TimeCalculator.getTimeAfterSeconds(expiresIn);
       GoogleOauthRefreshResponse googleOauthRefreshResponse = new GoogleOauthRefreshResponse(
-        updatedAccessToken,
-        updatedExpires
-      );
+          updatedAccessToken,
+          updatedExpires);
       // TODO
       // レスポンスをどうするか。
       // このメソッド内でどこまでやるか。

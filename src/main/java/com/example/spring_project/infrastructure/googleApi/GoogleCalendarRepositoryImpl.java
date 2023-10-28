@@ -30,8 +30,8 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
         ArrayList<Event> events = new ArrayList<Event>();
         String requestUrl = "https://www.googleapis.com/calendar/v3/calendars/";
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-        System.out.println("GetGoogleCalendarEvents updatedMin");
-        System.out.println(updatedMin);
+        log.info("GetGoogleCalendarEvents updatedMin");
+        log.info(updatedMin.toString());
         try {
             requestUrl += URLEncoder.encode(calendarId, "UTF-8") + "/events";
             if (updatedMin != null) {
@@ -50,8 +50,8 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
                 .header("Authorization", "Bearer " + accessToken)
                 .GET()
                 .build();
-        System.out.println("GetGoogleCalendarEvents");
-        System.out.println(request);
+        log.info("GetGoogleCalendarEvents");
+        log.info(request.toString());
         SimpleDateFormat start_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat end_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat created_at_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -66,11 +66,7 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
             Integer loopCount = node.size();
 
             for (int i = 0; i < loopCount; i++) {
-                log.info("eventNum".replace("Num", String.valueOf(i)));
                 JsonNode event = node.get(i);
-                // System.out.println("event");
-                // System.out.println(event);
-                log.info("eventNum".replace("Num", String.valueOf(i)));
                 if (event.has("summary")) {
                     log.info(event.toString());
                     String id = event.get("id").toString();
@@ -140,7 +136,6 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
             }
 
         } catch (Exception e) {
-            // e.printStackTrace();
             log.error(e.toString());
         }
         return events;

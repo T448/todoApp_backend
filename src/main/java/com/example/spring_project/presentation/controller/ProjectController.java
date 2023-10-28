@@ -20,9 +20,11 @@ import com.example.spring_project.presentation.model.request.ProjectRequest;
 import com.example.spring_project.service.ProjectUsecase;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
 @RestController
+@Slf4j
 public class ProjectController {
     private final HideValue hideValue;
 
@@ -53,8 +55,8 @@ public class ProjectController {
 
     @PostMapping(value = "/api/project")
     public void postProject(@RequestBody ProjectRequest request) {
-        System.out.println("-----[POST project request]-----");
-        System.out.println(request);
+        log.info("-----[POST project request]-----");
+        log.info(request.toString());
         String email = hideValue.getHideEmailValue();
         projectUsecase.addNewProject(
                 request.getName(),

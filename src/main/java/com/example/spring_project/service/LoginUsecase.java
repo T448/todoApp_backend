@@ -12,7 +12,6 @@ import com.example.spring_project.domain.repository.GoogleCalendarColorsReposito
 import com.example.spring_project.domain.repository.GoogleCalendarGetCalendarListRepository;
 import com.example.spring_project.domain.repository.GoogleOauthRepository;
 import com.example.spring_project.domain.repository.GoogleRepository;
-import com.example.spring_project.domain.repository.ProjectRepository;
 import com.example.spring_project.domain.repository.SessionRepository;
 import com.example.spring_project.domain.repository.UserRepository;
 
@@ -61,11 +60,9 @@ public class LoginUsecase {
   @Autowired
   private ProjectMapper projectMapper;
 
-  private static final String GENERAL = "General";
-
   public String login(String authCode)
       throws UnsupportedEncodingException {
-    System.out.println("login");
+    log.info("login");
     // アクセストークン、リフレッシュトークン、有効期限を取得する
     GoogleOauthResponse googleOauthResponse = googleOauthRepository.GetAccessToken(authCode);
     String accessToken = googleOauthResponse.getAccessToken();
@@ -110,7 +107,8 @@ public class LoginUsecase {
       try {
         if (!mainCalendar.getId().equals("")) {
           log.info("insert project");
-          projectMapper.insertProject(mainCalendar.getId(), GENERAL, mainCalendar.getColor_id(), mainCalendar.getMemo(),
+          projectMapper.insertProject(mainCalendar.getId(), mainCalendar.getName(), mainCalendar.getColor_id(),
+              mainCalendar.getMemo(),
               email);
         }
       } catch (Exception error) {

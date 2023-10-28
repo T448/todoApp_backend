@@ -49,7 +49,8 @@ public class GoogleCalendarGetCalendarListRepositoryImpl implements GoogleCalend
                 }
                 calendarList.add(
                         new Project(
-                                item.get("id").toString().replaceAll("\"", ""), "General",
+                                item.get("id").toString().replaceAll("\"", ""),
+                                item.get("summary").toString().replaceAll("\"", ""),
                                 item.get("colorId").toString().replaceAll("\"", ""),
                                 memo,
                                 email,
