@@ -7,6 +7,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,7 +33,9 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
         String requestUrl = "https://www.googleapis.com/calendar/v3/calendars/";
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
         log.info("GetGoogleCalendarEvents updatedMin");
-        log.info(updatedMin.toString());
+        if (updatedMin != null) {
+            log.info(updatedMin.toString());
+        }
         try {
             requestUrl += URLEncoder.encode(calendarId, "UTF-8") + "/events";
             if (updatedMin != null) {
@@ -52,8 +56,8 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
                 .build();
         log.info("GetGoogleCalendarEvents");
         log.info(request.toString());
-        SimpleDateFormat start_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat end_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat start_dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat end_dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat created_at_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         SimpleDateFormat updated_at_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
@@ -73,35 +77,55 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
                     String created_at = event.get("created").toString();
                     String updated_at = event.get("updated").toString();
                     String title = event.get("summary").toString();
-                    String start;
-                    String end;
-                    Integer endDelta = 0;
+                    Date startDate = null;
+                    Date endDate = null;
+                    Date startDateTime = null;
+                    Date endDateTime = null;
+                    // Integer endDelta = 0;
 
                     try {
-                        start = event.get("start").get("dateTime").toString();
+                        String startDateTimeStr = event.get("start").get("dateTime").toString().replaceAll("\"", "");
+                        OffsetDateTime startOffsetDateTime = OffsetDateTime.parse(startDateTimeStr);
+                        ZoneOffset offsetZoneStart = startOffsetDateTime.getOffset();
+                        OffsetDateTime startUTCOffsetDateTime = startOffsetDateTime
+                                .minusSeconds(offsetZoneStart.getTotalSeconds());
+                        startDateTime = Date.from(startUTCOffsetDateTime.toInstant());
+                        log.info("startDateTime");
+                        log.info(startDateTime.toString());
                     } catch (Exception e) {
-                        start = event.get("start").get("date").toString();
-                        start += "T00:00:00";
+                        String startDateStr = event.get("start").get("date").toString().replaceAll("\"", "");
+                        startDate = start_dateFormat.parse(startDateStr);
+                        // start += "T00:00:00";
                     }
 
                     try {
-                        end = event.get("end").get("dateTime").toString();
+                        String endDateTimeStr = event.get("end").get("dateTime").toString().replaceAll("\"", "");
+                        OffsetDateTime endOffsetDateTime = OffsetDateTime.parse(endDateTimeStr);
+                        ZoneOffset offsetZoneEnd = endOffsetDateTime.getOffset();
+                        OffsetDateTime endUTCOffsetDateTime = endOffsetDateTime
+                                .minusSeconds(offsetZoneEnd.getTotalSeconds());
+                        endDateTime = Date.from(endUTCOffsetDateTime.toInstant());
                     } catch (Exception e) {
-                        end = event.get("end").get("date").toString().replaceAll("\"", "");
-                        end += "T23:59:59";
-                        // 翌日の23:59:59になってしまうため、後で引く。
-                        endDelta = 1;
+                        String endDateStr = event.get("end").get("date").toString().replaceAll("\"", "")
+                                .replaceAll("\"", "");
+                        endDate = end_dateFormat.parse(endDateStr);
+                        // end += "T23:59:59";
+                        // // 翌日の23:59:59になってしまうため、後で引く。
+                        // endDelta = 1;
                     }
                     id = id.replaceAll("\"", "");
                     email = email.replaceAll("\"", "");
                     title = title.replaceAll("\"", "");
-                    start = start.replaceAll("\"", "");
-                    start = start.replaceAll("T", " ");
-                    start = start.replaceAll("\\+09:00", "");
+                    // if (startDate != null) {
+                    // startDate = startDate.replaceAll("\"", "").replaceAll("T", " ");
+                    // }
+                    // start = start.replaceAll("\"", "");
+                    // start = start.replaceAll("T", " ");
+                    // start = start.replaceAll("\\+09:00", "");
 
-                    end = end.replaceAll("\"", "");
-                    end = end.replaceAll("T", " ");
-                    end = end.replaceAll("\\+09:00", "");
+                    // end = end.replaceAll("\"", "");
+                    // end = end.replaceAll("T", " ");
+                    // end = end.replaceAll("\\+09:00", "");
 
                     created_at = created_at.replaceAll("\"", "");
                     created_at = created_at.replaceAll("T", " ");
@@ -116,12 +140,12 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
                         shortTitle = shortTitle.substring(0, 10) + "...";
                     }
 
-                    Date start_Date = start_dateFormat.parse(start);
-                    Date end_Date = end_dateFormat.parse(end);
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(end_Date);
-                    calendar.add(Calendar.DATE, -endDelta);
-                    end_Date = calendar.getTime();
+                    // Date start_Date = start_dateFormat.parse(start);
+                    // Date end_Date = end_dateFormat.parse(end);
+                    // Calendar calendar = Calendar.getInstance();
+                    // calendar.setTime(end_Date);
+                    // calendar.add(Calendar.DATE, -endDelta);
+                    // end_Date = calendar.getTime();
                     Date created_at_Date = created_at_dateFormat.parse(created_at);
                     Date updated_at_Date = updated_at_dateFormat.parse(updated_at);
 
@@ -129,8 +153,8 @@ public class GoogleCalendarRepositoryImpl implements GoogleCalendarRepository {
                     String parentEventId = "";
                     String memo = "";
 
-                    Event eventObj = new Event(id, email, title, shortTitle, projectId, parentEventId, memo, start_Date,
-                            end_Date, created_at_Date, updated_at_Date);
+                    Event eventObj = new Event(id, email, title, shortTitle, projectId, parentEventId, memo, startDate,
+                            endDate, startDateTime, endDateTime, created_at_Date, updated_at_Date);
                     events.add(eventObj);
                 }
             }

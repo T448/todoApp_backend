@@ -12,6 +12,8 @@ public class EventRequest {
     private String memo;
     private String projectId;
     private String parentEventId;
+    private String startDate;
+    private String endDate;
     private String startDateTime;
     private String endDateTime;
     private String timeZone;

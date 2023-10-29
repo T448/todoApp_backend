@@ -265,11 +265,16 @@ public class Synchronize {
                     eventMemoGC = eventGC.getMemo();
                 }
                 String eventProjectIdGC = eventGC.getProject_id();
-                Date eventStartGC = eventGC.getStart();
-                Date eventEndGC = eventGC.getEnd();
+                Date eventStartDateGC = eventGC.getStartDate();
+                Date eventEndDateGC = eventGC.getEndDate();
+                Date eventStartDateTimeGC = eventGC.getStartDateTime();
+                Date eventEndDateTimeGC = eventGC.getEndDateTime();
                 if (!item.getTitle().equals(eventTitleGC) || eventMemoGC.equals(eventMemoGC)
-                        || !item.getProject_id().equals(eventProjectIdGC) || !item.getStart().equals(eventStartGC)
-                        || !item.getEnd().equals(eventEndGC)) {
+                        || !item.getProject_id().equals(eventProjectIdGC)
+                        || !item.getStartDate().equals(eventStartDateGC)
+                        || !item.getEndDate().equals(eventEndDateGC)
+                        || !item.getStartDateTime().equals(eventStartDateTimeGC)
+                        || !item.getEndDateTime().equals(eventEndDateTimeGC)) {
                     updateEventListForDB.add(eventGC);
                 }
             } else {

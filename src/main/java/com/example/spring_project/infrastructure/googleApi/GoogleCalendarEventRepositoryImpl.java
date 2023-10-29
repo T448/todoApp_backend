@@ -9,8 +9,10 @@ import java.net.http.HttpResponse;
 import org.springframework.stereotype.Service;
 
 import com.example.spring_project.domain.repository.GoogleCalendarEventRepository;
-import com.example.spring_project.infrastructure.googleApi.request.GoogleCalendarAddEventRequest;
-import com.example.spring_project.infrastructure.googleApi.request.GoogleCalendarUpdateEventRequest;
+import com.example.spring_project.infrastructure.googleApi.request.GoogleCalendarAddEventRequestDate;
+import com.example.spring_project.infrastructure.googleApi.request.GoogleCalendarAddEventRequestDateTime;
+import com.example.spring_project.infrastructure.googleApi.request.GoogleCalendarUpdateEventRequestDate;
+import com.example.spring_project.infrastructure.googleApi.request.GoogleCalendarUpdateEventRequestDateTime;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -22,7 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 public class GoogleCalendarEventRepositoryImpl implements GoogleCalendarEventRepository {
 
     @Override
-    public String addNewEvent(String summary, String description, String startDateTime, String endDateTime,
+    public String addNewEvent(String summary, String description, String startDate, String endDate,
+            String startDateTime, String endDateTime,
             String timeZone, String calendarId, String accessToken) {
         String requestUrl = "";
         try {
@@ -33,12 +36,28 @@ public class GoogleCalendarEventRepositoryImpl implements GoogleCalendarEventRep
             log.error(e.toString());
         }
 
-        var newEvent = new GoogleCalendarAddEventRequest(summary, description, startDateTime, endDateTime, timeZone);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         String requestBody = "";
         try {
-            requestBody = objectMapper.writeValueAsString(newEvent);
+            if (startDate.isBlank()) {
+                requestBody = objectMapper.writeValueAsString(
+                        new GoogleCalendarAddEventRequestDateTime(
+                                summary,
+                                description,
+                                startDateTime,
+                                endDateTime,
+                                timeZone));
+            } else {
+                requestBody = objectMapper.writeValueAsString(
+                        new GoogleCalendarAddEventRequestDate(
+                                summary,
+                                description,
+                                startDate,
+                                endDate,
+                                timeZone));
+            }
+
         } catch (Exception e) {
             log.error(e.toString());
         }
@@ -75,7 +94,8 @@ public class GoogleCalendarEventRepositoryImpl implements GoogleCalendarEventRep
     }
 
     @Override
-    public String updateEvent(String eventId, String summary, String description, String startDateTime,
+    public String updateEvent(String eventId, String summary, String description, String startDate, String endDate,
+            String startDateTime,
             String endDateTime,
             String timeZone, String calendarId, String accessToken) {
 
@@ -90,15 +110,20 @@ public class GoogleCalendarEventRepositoryImpl implements GoogleCalendarEventRep
         }
         log.info("requestUrl");
         log.info(requestUrl);
-        var updatedEvent = new GoogleCalendarUpdateEventRequest(summary, description,
-                startDateTime.replace(" ", "T").concat(":00"),
-                endDateTime.replace(" ", "T").concat(":00"),
-                timeZone);
+
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         String requestBody = "";
         try {
-            requestBody = objectMapper.writeValueAsString(updatedEvent);
+            if (startDate.isBlank()) {
+                requestBody = objectMapper.writeValueAsString(
+                        new GoogleCalendarUpdateEventRequestDateTime(summary, description, startDateTime, endDateTime,
+                                timeZone));
+            } else {
+                requestBody = objectMapper.writeValueAsString(
+                        new GoogleCalendarUpdateEventRequestDate(summary, description, startDate, endDate, timeZone));
+            }
+
         } catch (Exception e) {
             log.error(e.toString());
         }

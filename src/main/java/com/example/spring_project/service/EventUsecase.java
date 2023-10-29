@@ -80,8 +80,10 @@ public class EventUsecase {
                                 item.getParent_event_id(),
                                 List.of(),
                                 item.getMemo(),
-                                item.getStart(),
-                                item.getEnd(),
+                                item.getStartDate(),
+                                item.getEndDate(),
+                                item.getStartDateTime(),
+                                item.getEndDateTime(),
                                 item.getCreated_at(),
                                 item.getUpdated_at());
                     })
@@ -97,10 +99,13 @@ public class EventUsecase {
             String memo,
             String projectId,
             String parentEventId,
-            String startDateTime,
-            String endDateTime,
+            String startDateStr,
+            String endDateStr,
+            String startDateTimeStr,
+            String endDateTimeStr,
             String timeZone, String accessToken, String email) {
-        String newEventId = googleCalendarEventRepository.addNewEvent(name, memo, startDateTime, endDateTime,
+        String newEventId = googleCalendarEventRepository.addNewEvent(name, memo, startDateStr, endDateStr,
+                startDateTimeStr, endDateTimeStr,
                 timeZone, projectId, accessToken);
 
         if (!newEventId.startsWith("[error]", 0)) {
@@ -108,23 +113,39 @@ public class EventUsecase {
             if (shortTitle.length() > 10) {
                 shortTitle = shortTitle.substring(0, 10) + "...";
             }
-            SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-            Date start;
+            SimpleDateFormat sdfStartDateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            Date startDateTime = null;
             try {
-                start = sdFormat.parse(startDateTime);
+                startDateTime = sdfStartDateTime.parse(startDateTimeStr);
             } catch (ParseException e) {
-                start = new Date();
+                e.printStackTrace();
             }
-            Date end;
+            SimpleDateFormat sdfEndDateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            Date endDateTime = null;
             try {
-                end = sdFormat.parse(endDateTime);
+                endDateTime = sdfEndDateTime.parse(endDateTimeStr);
             } catch (ParseException e) {
-                end = new Date();
+                e.printStackTrace();
             }
+            SimpleDateFormat sdfStartDate = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = null;
+            try {
+                startDate = sdfStartDate.parse(startDateStr);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            SimpleDateFormat sdfEndDate = new SimpleDateFormat("yyyy-MM-dd");
+            Date endDate = null;
+            try {
+                endDate = sdfEndDate.parse(endDateStr);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
             eventRepository.RegisterEvents(
                     List.of(
-                            new Event(newEventId, email, name, shortTitle, projectId, parentEventId, memo, start, end,
-                                    null, null)));
+                            new Event(newEventId, email, name, shortTitle, projectId, parentEventId, memo, startDate,
+                                    endDate, startDateTime, endDateTime, null, null)));
         }
         return newEventId;
     }
@@ -148,6 +169,8 @@ public class EventUsecase {
             String name,
             String memo,
             String projectId,
+            String startDateStr,
+            String endDateStr,
             String startDateTimeStr,
             String endDateTimeStr,
             String timeZone,
@@ -156,26 +179,42 @@ public class EventUsecase {
         log.info("[EventUsecase] update event");
 
         String updateResponseFromGoogleCalendar = googleCalendarEventRepository.updateEvent(
-                eventId, name, memo, startDateTimeStr, endDateTimeStr, timeZone, projectId, accessToken);
+                eventId, name, memo, startDateStr, endDateStr, startDateTimeStr, endDateTimeStr, timeZone, projectId,
+                accessToken);
 
         if (updateResponseFromGoogleCalendar.equals(eventId)) {
-            SimpleDateFormat sdfStart = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            SimpleDateFormat sdfStartDateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm");
             Date startDateTime = null;
             try {
-                startDateTime = sdfStart.parse(startDateTimeStr);
+                startDateTime = sdfStartDateTime.parse(startDateTimeStr);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            SimpleDateFormat sdfEnd = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+            SimpleDateFormat sdfEndDateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm");
             Date endDateTime = null;
             try {
-                endDateTime = sdfEnd.parse(endDateTimeStr);
+                endDateTime = sdfEndDateTime.parse(endDateTimeStr);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            SimpleDateFormat sdfStartDate = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = null;
+            try {
+                startDate = sdfStartDate.parse(startDateStr);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            SimpleDateFormat sdfEndDate = new SimpleDateFormat("yyyy-MM-dd");
+            Date endDate = null;
+            try {
+                endDate = sdfEndDate.parse(endDateStr);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
             Event updatedEvent = new Event(
-                    eventId, email, name, name, projectId, null, memo, startDateTime, endDateTime, null, null);
+                    eventId, email, name, name, projectId, null, memo, startDate, endDate, startDateTime, endDateTime,
+                    null, null);
             eventRepository.UpdateEvent(updatedEvent);
         }
         return updateResponseFromGoogleCalendar;
