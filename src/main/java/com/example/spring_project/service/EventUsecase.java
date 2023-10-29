@@ -113,33 +113,46 @@ public class EventUsecase {
             if (shortTitle.length() > 10) {
                 shortTitle = shortTitle.substring(0, 10) + "...";
             }
-            SimpleDateFormat sdfStartDateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
             Date startDateTime = null;
-            try {
-                startDateTime = sdfStartDateTime.parse(startDateTimeStr);
-            } catch (ParseException e) {
-                e.printStackTrace();
+            if (!startDateTimeStr.isBlank()) {
+                SimpleDateFormat sdfStartDateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+                try {
+                    startDateTime = sdfStartDateTime.parse(startDateTimeStr);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
             }
-            SimpleDateFormat sdfEndDateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
             Date endDateTime = null;
-            try {
-                endDateTime = sdfEndDateTime.parse(endDateTimeStr);
-            } catch (ParseException e) {
-                e.printStackTrace();
+            if (!endDateTimeStr.isBlank()) {
+                SimpleDateFormat sdfEndDateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+                try {
+                    endDateTime = sdfEndDateTime.parse(endDateTimeStr);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
-            SimpleDateFormat sdfStartDate = new SimpleDateFormat("yyyy-MM-dd");
+
             Date startDate = null;
-            try {
-                startDate = sdfStartDate.parse(startDateStr);
-            } catch (ParseException e) {
-                e.printStackTrace();
+            if (!startDateStr.isBlank()) {
+                SimpleDateFormat sdfStartDate = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    startDate = sdfStartDate.parse(startDateStr);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
-            SimpleDateFormat sdfEndDate = new SimpleDateFormat("yyyy-MM-dd");
+
             Date endDate = null;
-            try {
-                endDate = sdfEndDate.parse(endDateStr);
-            } catch (ParseException e) {
-                e.printStackTrace();
+            if (!endDateStr.isBlank()) {
+                SimpleDateFormat sdfEndDate = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    endDate = sdfEndDate.parse(endDateStr);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
 
             eventRepository.RegisterEvents(
