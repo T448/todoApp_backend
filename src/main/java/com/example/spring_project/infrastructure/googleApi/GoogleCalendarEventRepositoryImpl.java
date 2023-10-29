@@ -5,6 +5,9 @@ import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
@@ -49,12 +52,19 @@ public class GoogleCalendarEventRepositoryImpl implements GoogleCalendarEventRep
                                 endDateTime,
                                 timeZone));
             } else {
+                // 終日の場合、終了日を+1してからリクエストを送る。
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date parsedEndDate = sdf.parse(endDate);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(parsedEndDate);
+                calendar.add(Calendar.DATE, 1);
+                String shiftedEndDate = sdf.format(calendar.getTime());
                 requestBody = objectMapper.writeValueAsString(
                         new GoogleCalendarAddEventRequestDate(
                                 summary,
                                 description,
                                 startDate,
-                                endDate,
+                                shiftedEndDate,
                                 timeZone));
             }
 
@@ -120,8 +130,20 @@ public class GoogleCalendarEventRepositoryImpl implements GoogleCalendarEventRep
                         new GoogleCalendarUpdateEventRequestDateTime(summary, description, startDateTime, endDateTime,
                                 timeZone));
             } else {
+                // 終日の場合、終了日を+1してからリクエストを送る。
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date parsedEndDate = sdf.parse(endDate);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(parsedEndDate);
+                calendar.add(Calendar.DATE, 1);
+                String shiftedEndDate = sdf.format(calendar.getTime());
                 requestBody = objectMapper.writeValueAsString(
-                        new GoogleCalendarUpdateEventRequestDate(summary, description, startDate, endDate, timeZone));
+                        new GoogleCalendarUpdateEventRequestDate(
+                                summary,
+                                description,
+                                startDate,
+                                shiftedEndDate,
+                                timeZone));
             }
 
         } catch (Exception e) {

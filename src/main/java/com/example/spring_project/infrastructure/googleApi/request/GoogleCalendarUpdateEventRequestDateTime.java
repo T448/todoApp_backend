@@ -10,15 +10,15 @@ import lombok.ToString;
 public class GoogleCalendarUpdateEventRequestDateTime {
     private String summary;
     private String description;
-    private DatetimeAndTimezone startDateTime;
-    private DatetimeAndTimezone endDateTime;
+    private DatetimeAndTimezone start;
+    private DatetimeAndTimezone end;
 
     public GoogleCalendarUpdateEventRequestDateTime(String summary, String description, String startDatetime,
             String endDatetime,
             String timezone) {
         this.summary = summary;
         this.description = description;
-        this.startDateTime = new DatetimeAndTimezone(startDatetime, timezone);
-        this.endDateTime = new DatetimeAndTimezone(endDatetime, timezone);
+        this.start = new DatetimeAndTimezone(startDatetime, timezone);
+        this.end = new DatetimeAndTimezone(endDatetime, timezone);
     }
 }
