@@ -7,13 +7,13 @@ import lombok.ToString;
 @Getter
 @ToString
 @AllArgsConstructor
-public class GoogleCalendarUpdateEventRequest {
+public class GoogleCalendarUpdateEventRequestDateTime {
     private String summary;
     private String description;
     private DatetimeAndTimezone start;
     private DatetimeAndTimezone end;
 
-    public GoogleCalendarUpdateEventRequest(String summary, String description, String startDatetime,
+    public GoogleCalendarUpdateEventRequestDateTime(String summary, String description, String startDatetime,
             String endDatetime,
             String timezone) {
         this.summary = summary;

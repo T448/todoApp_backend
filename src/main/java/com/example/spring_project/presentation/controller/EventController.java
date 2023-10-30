@@ -58,7 +58,8 @@ public class EventController {
         String email = hideValue.getHideEmailValue();
         String accessToken = hideValue.getHideTokenValue();
         String newEventId = eventUsecase.addEvents(request.getName(), request.getMemo(), request.getProjectId(),
-                request.getParentEventId(), request.getStartDateTime(), request.getEndDateTime(), request.getTimeZone(),
+                request.getParentEventId(), request.getStartDate(), request.getEndDate(), request.getStartDateTime(),
+                request.getEndDateTime(), request.getTimeZone(),
                 accessToken, email);
         return newEventId;
     }
@@ -69,7 +70,8 @@ public class EventController {
         String accessToken = hideValue.getHideTokenValue();
         return eventUsecase.updateEvent(request.getEventId(), request.getName(), request.getMemo(),
                 request.getProjectId(),
-                request.getStartDateTime(), request.getEndDateTime(), request.getTimeZone(), accessToken, email);
+                request.getStartDate(), request.getEndDate(), request.getStartDateTime(), request.getEndDateTime(),
+                request.getTimeZone(), accessToken, email);
     }
 
     @DeleteMapping(value = "api/events")

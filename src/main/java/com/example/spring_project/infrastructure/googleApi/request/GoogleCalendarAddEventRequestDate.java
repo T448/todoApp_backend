@@ -7,18 +7,18 @@ import lombok.ToString;
 @Getter
 @ToString
 @AllArgsConstructor
-public class GoogleCalendarAddEventRequest {
+public class GoogleCalendarAddEventRequestDate {
     private String summary;
     private String description;
-    private DatetimeAndTimezone start;
-    private DatetimeAndTimezone end;
+    private DateAndTimezone start;
+    private DateAndTimezone end;
 
-    public GoogleCalendarAddEventRequest(String summary, String description, String startDatetime,
+    public GoogleCalendarAddEventRequestDate(String summary, String description, String startDatetime,
             String endDatetime,
             String timezone) {
         this.summary = summary;
         this.description = description;
-        this.start = new DatetimeAndTimezone(startDatetime, timezone);
-        this.end = new DatetimeAndTimezone(endDatetime, timezone);
+        this.start = new DateAndTimezone(startDatetime, timezone);
+        this.end = new DateAndTimezone(endDatetime, timezone);
     }
 }

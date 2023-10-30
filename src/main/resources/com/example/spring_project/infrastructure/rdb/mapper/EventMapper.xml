@@ -11,8 +11,10 @@
         project_id,
         parent_event_id,
         memo,
-        start,
-        end,
+        start_date,
+        end_date,
+        start_datetime,
+        end_datetime,
         created_at,
         updated_at
     ) 
@@ -26,8 +28,10 @@
         #{item.project_id},
         #{item.parent_event_id},
         #{item.memo},
-        #{item.start},
-        #{item.end},
+        #{item.startDate},
+        #{item.endDate},
+        #{item.startDateTime},
+        #{item.endDateTime},
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP
     )
@@ -42,8 +46,10 @@ SELECT
     project_id,
     parent_event_id,
     memo,
-    start,
-    end,
+    start_date,
+    end_date,
+    start_datetime,
+    end_datetime,
     created_at,
     updated_at
 FROM 
@@ -74,8 +80,10 @@ WHERE
         , short_title = #{event.short_title}
         , project_id = #{event.project_id}
         , memo = #{event.memo}
-        , start = #{event.start}
-        , end = #{event.end}
+        , start_date = #{event.startDate}
+        , end_date = #{event.endDate}
+        , start_datetime = #{event.startDateTime}
+        , end_datetime = #{event.endDateTime}
         , updated_at = CURRENT_TIMESTAMP
     WHERE
         id = #{event.id}
@@ -129,22 +137,40 @@ WHERE
             #{item.memo}
         </foreach>
         ),
-        start = ELT(FIELD(id,
+        start_date = ELT(FIELD(id,
             <foreach collection="event_list" item="item" separator=",">
                 #{item.id}
             </foreach>
         ),
         <foreach collection="event_list" item="item" separator=",">
-            #{item.start}
+            #{item.startDate}
         </foreach>
         ),
-        end = ELT(FIELD(id,
+        end_date = ELT(FIELD(id,
             <foreach collection="event_list" item="item" separator=",">
                 #{item.id}
             </foreach>
         ),
         <foreach collection="event_list" item="item" separator=",">
-            #{item.end}
+            #{item.endDate}
+        </foreach>
+        ),
+        start_datetime = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.startDateTime}
+        </foreach>
+        ),
+        end_datetime = ELT(FIELD(id,
+            <foreach collection="event_list" item="item" separator=",">
+                #{item.id}
+            </foreach>
+        ),
+        <foreach collection="event_list" item="item" separator=",">
+            #{item.endDateTime}
         </foreach>
         ),
         updated_at = CURRENT_TIMESTAMP
@@ -166,8 +192,10 @@ WHERE
         project_id,
         parent_event_id,
         memo,
-        start,
-        end,
+        start_date,
+        end_date,
+        start_datetime,
+        end_datetime,
         created_at,
         updated_at
     FROM 

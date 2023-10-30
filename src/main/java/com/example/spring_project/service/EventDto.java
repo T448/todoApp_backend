@@ -23,8 +23,10 @@ public class EventDto {
     private String parentEventId;
     private List<String> childEventIdList;
     private String memo;
-    private Date start;
-    private Date end;
+    private Date startDate;
+    private Date endDate;
+    private Date startDateTime;
+    private Date endDateTime;
     private Date createdAt;
     private Date updatedAt;
 
