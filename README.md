@@ -53,6 +53,12 @@
 ./gradlew bootrun
 ```
 
+## build
+```
+./gradlew build
+java -jar ./build/libs/spring_project-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev // 本番環境の場合はprodを指定する
+```
+
 ### src/main/resources/com/example/spring_project/config/application.properties
 ```
 spring.request_url=https://oauth2.googleapis.com/token
