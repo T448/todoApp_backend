@@ -6,9 +6,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
 @Configuration
-@PropertySource(
-  "classpath:/com/example/spring_project/config/application.properties"
-)
+@PropertySource("classpath:/com/example/spring_project/config/application.properties")
+@PropertySource("classpath:/com/example/spring_project/config/application-${spring.profiles.active}.properties")
 public class ApplicationProperty {
 
   @Autowired
